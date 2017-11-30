@@ -1,0 +1,16 @@
+.card {
+    border: 1px solid #007bff;
+}
+.card-header{
+    background-color: #007bff;
+    color:white;
+}
+
+.table thead th{
+    background: #333;
+    color:white;
+    border:none;
+}
+.table thead td {
+    background: #c8e4ff;
+}
