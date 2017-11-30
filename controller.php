@@ -7,89 +7,27 @@ __copyright__ = "Copyright 2017"
 __version__   = "1.0"  
 */
 
-require_once('authentication.php');
+require_once('model/player.php');
+require_once('model/game.php');
 
-$auth = new Authentication();
-
-if ( !empty($_POST['action'])) 
+class Controller 
 {
-    /**
-     * Login Action. 
-     * requieres:
-     *       username
-     *       password
-     */
-    if ( $_POST['action'] == 'login' && 
-         !empty($_POST['username'])  && 
-         !empty($_POST['password'])     )
-    {
-        $rows = $auth->login($_POST['username'], $_POST['password']);
+        private $db       = null;
+        private $player   = null;
+        private $game     = null;
 
-        if ($rows)
+        /*
+        * params:
+        *   $db: DBConnect() object
+        */
+        function __construct($db)
         {
-            $_SESSION['authenticated'] = TRUE;
-            $_SESSION = array_merge($_SESSION, $rows[0]);
+            $this->db     = $db;
+            $this->player   = new Player($db);
+            $this->game     = new Game($db);
+
+            
         }
-    }
-    /**
-     * Logout Action
-     */
-    if ( $_POST['action'] == 'logout' )
-    {
-        $auth->logout();
-    }
-    /**
-     * Signup Account. 
-     * requires:
-     *      first_name,
-     *      last_name,
-     *      username,
-     *      password,
-     */
-    if ($_POST['action'] == 'signup'  && 
-        !empty($_POST['first_name'])  && 
-        !empty($_POST['last_name'])   && 
-        !empty($_POST['username'])    && 
-        !empty($_POST['password'])       )
-    {
-        $auth->signup($_POST['first_name'],
-                      $_POST['last_name'],
-                      $_POST['username'],
-                      $_POST['password']);
-
-    }
-    /**
-     * Signup Account. 
-     * requires:
-     *      first_name,
-     *      last_name,
-     *      username,
-     *      password,
-     */
-    if ($_POST['action'] == 'update'  && 
-        !empty($_POST['first_name'])  && 
-        !empty($_POST['last_name'])   && 
-        !empty($_POST['username'])    && 
-        !empty($_POST['password'])       )
-    {
-        $auth->update_profile($_POST['first_name'],
-                              $_POST['last_name'],
-                              $_POST['username'],
-                              $_POST['password']);
-
-    }
-    
 }
 
-if(empty($_SESSION["authenticated"])) 
-{
-    $auth->redirect('signup.html');
-}
-
-
-
-
-
-
- 
 ?>

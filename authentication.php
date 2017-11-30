@@ -7,11 +7,12 @@ __copyright__ = "Copyright 2017"
 __version__   = "1.0"  
 */
 
-require_once('model/db_connection.php');
+require_once('model/player.php');
 
 class Authentication 
 {
-        private $db = Null;
+        private $db     = null;
+        private $auth   = null;
 
         /*
         * params:
@@ -20,82 +21,171 @@ class Authentication
         function __construct($db)
         {
             session_start();
-            $this->db = $db;
+            $this->db     = $db;
+            $this->player   = new Player($db);
+
+            $this->__actions__();
         }
 
-        function login($username, $password)
+        function __actions__()
         {
-            $select = array('*'); 
-            $where  = array('username' => $username,
-                            'password' => $password);
-    
-            return $this->db->select('player', $select, $where);
-        }
-    
-        function signup($first_name, $last_name, $username, $password)
-        {
-            $row    = array(
-                'first_name' => $first_name,
-                'last_name'  => $last_name ,
-                'username'   => $username  ,
-                'password'   => $password  ,
-                'time'       => time()     ,
-                'admin'      => 0);
-                
-            return $this->db->insert('player', $row);
-        }
-
-        function update_profile($user_id, $first_name, $last_name, $username, $password)
-        {
-            $set   = array(
-                'first_name' => $first_name,
-                'last_name'  => $last_name,
-                'username'   => $username,
-                'password'   => $password
-            );
-            $where = array(
-                'id' => $user_id
-            );
-            return $this->db->update('player', $set, $where);
-        }
-
-        function is_admin($user_id)
-        {
-            $where = array(
-                'id'    => $user_id, 
-                'admin' => 1
-            );
-            return $this->db->select('player', array('*'), $where);
-        }
-
-        function reset_password($current_user_id, $user_id, $password)
-        {
-            if ( $this->is_admin($current_user_id) || 
-                 ($current_user_id == $user_id)      )
+            if ( !empty($_POST['action'])) 
             {
-                $set   = array(
-                    'password'   => $password
-                );
-                $where = array(
-                    'id'        => $user_id
-                );
-                return $this->db->update('player', $set, $where);
+                /**
+                 * Login Action. 
+                 * requieres:
+                 *       username
+                 *       password
+                 */
+                if ( $_POST['action'] == 'login' && 
+                     !empty($_POST['username'])  && 
+                     !empty($_POST['password'])     )
+                {
+                    print json_encode($this->actionLogin($_POST['username'], 
+                                                   $_POST['password']));
+                }
+                /**
+                 * Logout Action
+                 */
+                if ( $_POST['action'] == 'logout' )
+                {
+                    print json_encode($this->actionLogout());
+                }  
+                
+                /**
+                 * Signup Account. 
+                 * requires:
+                 *      first_name,
+                 *      last_name,
+                 *      username,
+                 *      password,
+                 */
+                if ($_POST['action'] == 'signup'  && 
+                    !empty($_POST['first_name'])  && 
+                    !empty($_POST['last_name'])   && 
+                    !empty($_POST['username'])    && 
+                    !empty($_POST['password'])       )
+                {
+                    print json_encode($this->actionNewUser($_POST['first_name'],
+                                                    $_POST['last_name'],
+                                                    $_POST['username'],
+                                                    $_POST['password']));
+            
+                }
+
+                /**
+                 * Update Profile Account. 
+                 * requires:
+                 *      first_name,
+                 *      last_name,
+                 *      username,
+                 *      password,
+                 */
+                if ($_POST['action'] == 'update'  && 
+                    !empty($_POST['first_name'])  && 
+                    !empty($_POST['last_name'])   && 
+                    !empty($_POST['username'])    && 
+                    !empty($_POST['password'])       )
+                {
+                    print json_encode($this->actionUpdateProfile($_SESSION['id'],
+                                           $_POST['first_name'],
+                                           $_POST['last_name'],
+                                           $_POST['username'],
+                                           $_POST['password']));
+            
+                }
             }
-            return False;
         }
 
-        function logout()
+        function actionUpdateProfile($user_id, $first_name, $last_name, $username, $password)
         {
-            session_destroy();
+            $output = array(
+                'return' => False,
+                'data'   => [],
+                'message'=> ''
+            );
+            $return  = $this->player->updateProfile($user_id, 
+                                                $first_name, 
+                                                $last_name, 
+                                                $username, 
+                                                $password);
+            $output['return'] = boolval($return);
+
+            if (!$output['return'])
+            {
+                $output['message'] = 'username already taken';
+            }
+            return $output;
         }
-    
+
+        function actionNewUser($first_name, $last_name, $username, $password)
+        {
+            $output = array(
+                'return' => False,
+                'data'   => [],
+                'message'=> ''
+            );
+            $return = $this->player->create($first_name, 
+                                          $last_name, 
+                                          $username, 
+                                          $password);
+
+            $output['return'] = boolval($return);
+
+            if (!$output['return'])
+            {
+                $output['message'] = 'username already taken';
+            }
+            return $output;
+        }
+
+        function actionLogin($username, $password)
+        {
+            $output = array(
+                'return' => False,
+                'data'   => [],
+                'message'=> ''
+            );
+
+            $return  = $auth->valid($username, $password);
+            
+            $output['return'] = boolval($return);
+            
+            if ($output['return'])
+            {
+                $_SESSION['authenticated'] = TRUE;
+                $_SESSION = array_merge($_SESSION, $return[0]);
+            }
+            else 
+            {
+                $output['message'] = 'Incorrect username and password';
+            }
+            return $output;
+        }
+
+        function actionLogout()
+        {
+            $output = array(
+                'return' => True,
+                'data'   => [],
+                'message'=> ''
+            );
+            session_destroy();
+            return $output;
+        }
+
+        function isUserAuthenticated()
+        {
+            return !empty($_SESSION["authenticated"]);
+        }
+
         function redirect($url)
         {
             header("Location: $url");
         }
-    
-       
+           
 }
 
- 
+ $db   = new DBConnect();
+ $auth = new Authentication($db);
 ?>
