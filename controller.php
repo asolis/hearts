@@ -57,7 +57,7 @@ else if ( !empty($_GET['action']) && $_GET['action'] == 'game')
         foreach($scores as $key => $value)
             $scores[$key] += $hand[$key];
 
-    $scores['index'] = 'Total';
+    $scores['index'] = 'T';
             
     $game = array(
         'game_id' => $_GET['game_id'],

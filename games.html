@@ -23,11 +23,17 @@
         <link rel="stylesheet" href="css/background.css?asdf">
         <link rel="stylesheet" href="vendor/bootstrap-4/css/bootstrap.min.css">
         <link rel="stylesheet" href="vendor/font-awesome-4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="css/card.css?a">
+        <link rel="stylesheet" href="css/card.css">
 
 	</head>
 	<body>
-                <div id="rankings"></div>
+                <div class="input-group container pt-5">
+                    <input id="search" type="text" pattern="\d*" class="form-control" placeholder="Search Game" >
+                    <span class="input-group-btn">
+                      <button id="go" class="btn btn-primary" type="button">Watch!</button>
+                    </span>
+                </div>
+                <div id="game"></div>
                 
 		<!-- jQuery first, then Tether, then Bootstrap JS. -->
                 <script src="vendor/jquery3.2.1/jquery.min.js" ></script>
@@ -37,20 +43,21 @@
                 <script src="vendor/json2html-sprintf/sprintf.js"></script>
                 <script src="vendor/json2html-sprintf/json2html.js"></script>
                 <script src="vendor/json2html-sprintf/jquery.json2html.js"></script>
-                <script src="js/display.js"></script>	
+                <script src="js/display.js?as"></script>	
                 <script>
                         $(function() {
+
+                             $('#go').click(function(event){
                                 var options    = {
-                                        "action": "stats",
-                                        "column": "wins"
+                                    "action": "game",
+                                    "column": "wins",
+                                    "game_id": $('#search').val()
                                 };
-                                showStats('#rankings', options);
-                                // var options    = {
-                                //     "action": "game",
-                                //     "column": "wins",
-                                //     "game_id": 1
-                                // };
-                                // showGame('#rankings',options);
+                                showGame('#game',options);
+                             });
+                                
+                                
+                                
                         });
                 </script>
 

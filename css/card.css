@@ -15,6 +15,20 @@
 .card-body {
     background-color: rgba(21, 25, 29, 0.514);
 }
+.card-body table{
+    margin:0;
+}
+.card-body-no-padding {
+    padding:0;
+}
+.card .divider {
+    border-color: rgb(182, 183, 185);
+    margin: 40px 0 20px 0;
+
+}
+.total-score{
+    background-color:rgb(89, 109, 201);
+}
 .card-header{
     background-color: none;
     color:white;
@@ -32,7 +46,7 @@
     min-height: 400px;
     vertical-align: middle;
 }
-.nb-card input { 
+.nb-card input, .navbar-nav input { 
 	width: 100%; 
 	margin-bottom: 10px; 
 	background: rgba(0,0,0,0.3);
@@ -53,4 +67,8 @@
 }
 .nb-card a{
     color:rgb(207, 218, 236);
+}
+
+.navbar.bg-dark , .bg-dark{
+    background-color:rgba(21, 25, 29, 0.514) !important;
 }

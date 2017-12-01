@@ -15,10 +15,13 @@ function showStats(container, options)
             "card"  :{"<>":"div","class":"container mt-5","html":[
                 {"<>":"div","class":"card tex ","html":[
                     {"<>":"div","class":"card-header ","html":[
-                        {"<>":"h5","html": sprintf("Rankings  <small>| $s</small> ", options.column)}
-                      ]},
-                    {"<>":"div","class":"card-body text-center","html":[
-                        {"<>":"table","class":"table table-sm table-bordered table-dark","html":[
+                        {"<>":"span", "class":"float-right fa fa-refresh", "html":"", "aria-hidden":"true", "onclick":function(e){
+                            showStats(container, options);
+                        }},
+                        {"<>":"h5","html":sprintf("Rankings  <small>| $s</small> ", options.column)}
+                    ]},
+                    {"<>":"div","class":"card-body text-center card-body-no-padding","html":[
+                        {"<>":"table","class":"table table-sm table-bordered table-dark ","html":[
                             {"<>":"thead","html":[
                                 {"<>":"tr","html":[
                                     {"<>":"th","html":"Rank"},
@@ -54,7 +57,7 @@ function showStats(container, options)
               ]},
             "rows": {"<>":"tr","html":[
                 {"<>":"th","html":"${rank}"},
-                {"<>":"td","html":"${username} (${first_name} ${last_name})"},
+                {"<>":"td","html":"${first_name} ${last_name}"},
                 {"<>":"td","html":"${wins}"},
                 {"<>":"td","html":"${losses}"},
                 {"<>":"td","html":"${plays}"},
@@ -74,15 +77,15 @@ function showGame(container, options)
     $.getJSON(controller, options, function(data){
         
         var transforms = {
-            "card":{"<>":"div","class":"container mt-5","html":[
+            "card":{"<>":"div","class":"container mt-3","html":[
                 {"<>":"div","class":"card tex ","html":[
-                    {"<>":"div","class":"card-header ","html":[
+                    {"<>":"div","class":"card-header ","children":[
                         {"<>":"span", "class":"float-right fa fa-refresh", "html":"", "aria-hidden":"true", "onclick":function(e){
                             showGame(container, options);
                         }},
                         {"<>":"h5","html":"Game Code: ${game_id}"}
                     ]},
-                    {"<>":"div","class":"card-body text-center","html":[
+                    {"<>":"div","class":"card-body text-center card-body-no-padding","html":[
                         {"<>":"table","class":"table table-sm table-bordered table-dark","html":[
                             {"<>":"thead","html":[
                                 {"<>":"tr","html":[
@@ -92,7 +95,7 @@ function showGame(container, options)
                                     {"<>":"th","html":"Player3"},
                                     {"<>":"th","html":"Player4"}
                                 ]},
-                                {"<>":"tr","html":[
+                                {"<>":"tr", "class":"total-score","html":[
                                     {"<>":"td","html":"${scores.index}"},
                                     {"<>":"td","html":"${scores.player1_score}"},
                                     {"<>":"td","html":"${scores.player2_score}"},
