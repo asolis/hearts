@@ -24,7 +24,7 @@ class Player
 
         function valid($username, $password)
         {
-            $select = array('*'); 
+            $select = array('id','username','first_name','last_name', 'admin', 'time'); 
             $where  = array('username' => $username,
                             'password' => $password);
     
@@ -40,7 +40,7 @@ class Player
                 'password'   => $password  ,
                 'time'       => time()     ,
                 'admin'      => 0);
-                
+           
             return $this->db->insert('player', $row);
         }
 

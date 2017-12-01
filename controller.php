@@ -12,6 +12,8 @@ require_once('model/db_connection.php');
 require_once('model/player.php');
 require_once('model/game.php');
 
+session_start();
+
 $conn   = new DBConnection('sqlite:db/hearts.db');
 $player = new Player($conn);
 $game   = new Game($conn);
@@ -22,7 +24,13 @@ $output = array(
     'message'=> ''
 );
 
-
+/**
+ * Show games stats:
+ * requires 
+ *      action
+ * optional
+ *      column
+ */
 if ( !empty($_GET['action']) && $_GET['action'] == 'stats') 
 {
     if (!empty($_GET['column']))
@@ -37,6 +45,12 @@ if ( !empty($_GET['action']) && $_GET['action'] == 'stats')
 
     print json_encode($output);
 }
+/**
+ * Show game by id
+ * requires
+ *      action 
+ *      game_id
+ */
 else if ( !empty($_GET['action']) && $_GET['action'] == 'game') 
 {
     $scores = array(
@@ -69,5 +83,71 @@ else if ( !empty($_GET['action']) && $_GET['action'] == 'game')
 
     print json_encode($output);
 }
+/**
+ * Signup Account. (POST)
+ * requires:
+ *      action
+ *      first_name,
+ *      last_name,
+ *      username,
+ *      password,
+ */
+else if (!empty($_POST['action']) && 
+    !empty($_POST['first_name'])  && 
+    !empty($_POST['last_name'])   && 
+    !empty($_POST['username'])    && 
+    !empty($_POST['password'])    &&
+    $_POST['action'] == 'register')
+{
+    
+   
+    $return = $player->create($_POST['first_name'], 
+                              $_POST['last_name'], 
+                              $_POST['username'], 
+                              $_POST['password']);
+    
+    $output['return'] = boolval($return);
 
+    
+    if (!$output['return'])
+        $output['message'] = 'Username taken';
+    print json_encode($output);
+}
+
+
+else if (!empty($_POST['action']) && $_POST['action'] == 'profile')
+{
+    
+    $output['return']   = $_SESSION['authenticated'];
+    $output['data']     = array(
+        'first_name' => $_SESSION['first_name'],
+        'last_name'  => $_SESSION['last_name'],
+        'username'   => $_SESSION['username']
+    );
+    print json_encode($output);
+}
+
+
+else if (!empty($_POST['action']) && $_POST['action'] == 'update_profile')
+{
+    
+    
+    
+    $return = $player->updateProfile($_SESSION['id'], 
+                            $_POST['first_name'], 
+                            $_POST['last_name'], 
+                            $_POST['username'], 
+                            $_POST['password']);
+    $output['return']   = boolval($return);
+    if ($output['return'])
+    {
+        $_SESSION['first_name'] = $_POST['first_name'];
+        $_SESSION['last_name']  = $_POST['last_name'];
+        $_SESSION['username']   = $_POST['username'];
+    }
+    else {
+        $output['message'] = array("username" => "Username taken"); 
+    }
+    print json_encode($output);
+}
 ?>

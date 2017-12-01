@@ -72,3 +72,7 @@
 .navbar.bg-dark , .bg-dark{
     background-color:rgba(21, 25, 29, 0.514) !important;
 }
+
+.nb-card .col-form-label{
+    color:rgb(207, 218, 236);
+}

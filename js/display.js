@@ -15,7 +15,7 @@ function showStats(container, options)
             "card"  :{"<>":"div","class":"container mt-5","html":[
                 {"<>":"div","class":"card tex ","html":[
                     {"<>":"div","class":"card-header ","html":[
-                        {"<>":"span", "class":"float-right fa fa-refresh", "html":"", "aria-hidden":"true", "onclick":function(e){
+                        {"<>":"span", "class":"float-right fa fa-refresh", "aria-hidden":"true", "onclick":function(e){
                             showStats(container, options);
                         }},
                         {"<>":"h5","html":sprintf("Rankings  <small>| $s</small> ", options.column)}
@@ -80,7 +80,7 @@ function showGame(container, options)
             "card":{"<>":"div","class":"container mt-3","html":[
                 {"<>":"div","class":"card tex ","html":[
                     {"<>":"div","class":"card-header ","children":[
-                        {"<>":"span", "class":"float-right fa fa-refresh", "html":"", "aria-hidden":"true", "onclick":function(e){
+                        {"<>":"span", "class":"float-right fa fa-refresh", "aria-hidden":"true", "onclick":function(e){
                             showGame(container, options);
                         }},
                         {"<>":"h5","html":"Game Code: ${game_id}"}
@@ -130,3 +130,20 @@ function showGame(container, options)
         $(container).json2html(data.data, transforms.card);
     });
 }
+
+
+function showAlert(container, data)
+{
+    var transform = {"<>":"div","class":"alert alert-warning alert-dismissible fade show","role":"alert","html":[
+        {"<>":"span","html":"${message}"},
+        {"<>":"button","type":"button","class":"close","data-dismiss":"alert","aria-label":"Close","html":[
+            {"<>":"span","aria-hidden":"true","html":"×"}
+          ]}
+      ]};
+      $(container).html('');
+      $(container).json2html(data, transform);
+}
+
+
+
+

@@ -119,7 +119,7 @@ class DBConnection {
         
         $stmt   = null;
         $return = $this->_bind_params($query, $where, $stmt);
-        return $stmt->fetchAll(); 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); 
     }
 
     function delete($table, $where)
