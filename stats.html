@@ -23,53 +23,36 @@
         <link rel="stylesheet" href="css/background.css?asdf">
         <link rel="stylesheet" href="vendor/bootstrap-4/css/bootstrap.min.css">
         <link rel="stylesheet" href="vendor/font-awesome-4.7.0/css/font-awesome.min.css">
-        
-        <link rel="stylesheet" href="css/table.css?as">
+        <link rel="stylesheet" href="css/card.css">
 
 	</head>
 	<body>
-                <div class="container mt-4">
-                        <div class="card tex ">
-                                <div class="card-header ">
-                                        <h5> Stats</h5>
-                                </div>
-                                <div class="card-body text-center">
-                                        <table class="table table-sm table-bordered table-dark">
-                                                <thead >
-                                                <tr>
-                                                <th>#</th>
-                                                <th>Player1</th>
-                                                <th>W</th>
-                                                <th>L</th>
-                                                <th>P</th>
-                                                <th>S</th>
-                                                <th>C</th>
-                                                </tr>
-                                                
-                                                </thead>
-                                                <tbody >
-                                                <tr>
-                                                                <th>1</th>
-                                                                <td>Asmmsa</td>
-                                                                <td>10</td>
-                                                                <td>40</td>
-                                                                <td>25</td>
-                                                                <td>25</td>
-                                                                <td>25</td>
-                                                </tr>
-                                                
-                                                
-                                                </tbody>
-                                        </table>
-                                        
-                                </div>
-                        </div>
-                </div>
-           	
-	
+                <div id="rankings"></div>
+                
 		<!-- jQuery first, then Tether, then Bootstrap JS. -->
                 <script src="vendor/jquery3.2.1/jquery.min.js" ></script>
-		<script src="vendor/popper1.12.9/popper.min.js"></script>
-                <script src="vendor/bootstrap-4/js/bootstrap.min.js"></script>	
+                <script src="vendor/popper1.12.9/popper.min.js"></script>
+                
+                <script src="vendor/bootstrap-4/js/bootstrap.min.js"></script>
+                <script src="vendor/json2html-sprintf/sprintf.js"></script>
+                <script src="vendor/json2html-sprintf/json2html.js"></script>
+                <script src="vendor/json2html-sprintf/jquery.json2html.js"></script>
+                <script src="js/display.js"></script>	
+                <script>
+                        $(function() {
+                                var options    = {
+                                        "action": "stats",
+                                        "column": "wins"
+                                };
+                                showStats('#rankings', options);
+                                // var options    = {
+                                //     "action": "game",
+                                //     "column": "wins",
+                                //     "game_id": 1
+                                // };
+                                // showGame('#rankings',options);
+                        });
+                </script>
+
     </body>
 </html>

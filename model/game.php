@@ -42,27 +42,49 @@ class Game
             );
             return $this->db->insert('game', $values);
         }
-
+        function rank(&$table, $column)
+        {
+            $prev = null;
+            
+            $length = count($table);
+            for($i = 0; $i < $length; $i++)
+            {
+                
+                $sub_arr = $table[$i][$column];
+                
+                if($prev == null || $sub_arr == $prev)
+                {
+                    $table[$i]['rank'] = $i == 0 ? 1 : $table[$i - 1]['rank'];
+                }
+                else
+                {
+                    $table[$i]['rank'] = $i + 1;
+                }
+                $prev = $sub_arr;
+            }
+        }
         /**
          * show view stats
          */
-        function showStats($column = 'wins', $type=SORT_DESC)
+        function getStats($column = 'wins', $type=SORT_DESC)
         {
             $table  = $this->db->select('stats', array('*'));
-            if ($column != '*')
-            {
-                $c = array_map(function($row) use ($column){return $row[$column];}, $table);
-                array_multisort($c, $type, $table);
-            }
+            
+            $c = array_map(function($row) use ($column){return $row[$column];}, $table);
+            array_multisort($c, $type, $table);
+
+            $this->rank($table, $column);
             return $table;
         }
+        
         /**
          * show game hands
          */
-        function show($game_id)
+        function getHands($game_id)
         {
-            return $this->db->select('hand', array('*'), array('game_id' => $game_id));
+            return $this->db->select('hand', array('*'), array('game_id' => $game_id),'AND', 'ORDER BY time');
         }
+        
         /**
          * finis a game and stores the stats:
          *  wins, losses, plays, shots, cheats

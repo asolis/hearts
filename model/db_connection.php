@@ -109,13 +109,13 @@ class DBConnection {
         return sprintf('AND %s', implode($op, $_tmp_where));
     }
 
-    function select($table, $columns, $where = array(), $where_operator = 'AND')
+    function select($table, $columns, $where = array(), $where_operator = 'AND', $append='')
     {
         $_where =  (empty($where)) ? '' : $this->_where(array_keys($where), $where_operator);
         
-        $query  = sprintf('SELECT %s FROM %s %s', 
+        $query  = sprintf('SELECT %s FROM %s %s %s', 
                                  implode(', ', $columns),
-                                 $table, $_where);
+                                 $table, $_where, $append);
         
         $stmt   = null;
         $return = $this->_bind_params($query, $where, $stmt);

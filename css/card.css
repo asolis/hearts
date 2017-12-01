@@ -1,0 +1,56 @@
+.card {
+    background-color: rgba(255, 255, 255, 0);
+}
+.card-header a.nav-link{
+    color: rgb(207, 218, 236);
+}
+.card-header a.nav-link.active{
+    color: rgb(207, 218, 236);
+    border-color:     rgba(255,255,255,0);
+    background-color: rgba(21, 25, 29, 0.514);
+}
+.card-header a.nav-link:hover{
+    border-color: rgba(255,255,255,0);
+}
+.card-body {
+    background-color: rgba(21, 25, 29, 0.514);
+}
+.card-header{
+    background-color: none;
+    color:white;
+}
+.card h5{
+    margin:0;
+}
+
+.nb-card{
+    max-width:500px;
+	margin:30px auto;
+	padding:20px 25px;
+}
+.nb-card .card-body {
+    min-height: 400px;
+    vertical-align: middle;
+}
+.nb-card input { 
+	width: 100%; 
+	margin-bottom: 10px; 
+	background: rgba(0,0,0,0.3);
+	border: none;
+	outline: none;
+	padding: 10px;
+	font-size: 13px;
+	color: #fff;
+	text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+	border: 1px solid rgba(0,0,0,0.3);
+	border-radius: 4px;
+	box-shadow: inset 0 -5px 45px rgba(100,100,100,0.2), 0 1px 1px rgba(255,255,255,0.2);
+	-webkit-transition: box-shadow .5s ease;
+	-moz-transition: box-shadow .5s ease;
+	-o-transition: box-shadow .5s ease;
+	-ms-transition: box-shadow .5s ease;
+	transition: box-shadow .5s ease;
+}
+.nb-card a{
+    color:rgb(207, 218, 236);
+}
