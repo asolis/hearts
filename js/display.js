@@ -60,7 +60,6 @@ function showProfile(container)
             {
                 window.location.href = 'home.php';
             }
-            console.log(json);
         }, 'json');
     }
 
@@ -301,9 +300,12 @@ function showGameControls(container)
     {
             obj.event.preventDefault();
             var selects   = $(sprintf('$s form',container)).serializeArray();
+            
             $.post(controller,selects, function(json){
                 if (json.return)
-                    locaction.reload();
+                    location.reload();
+                $(sprintf("$s form select",container)).addClass('is-invalid');
+              
             },'json');
     };
     function finishGame(obj)
@@ -311,22 +313,28 @@ function showGameControls(container)
             var options = {
                 "action":"finish"
             };
-            
-            $.post(controller,options, function(json){
-                if (json.return)
-                    locaction.reload();
-            },'json');
+            if (confirm('Would you like to finish this game?'))
+            {
+                $.post(controller,options, function(json){
+                    if (json.return)
+                        locaction.reload();
+                },'json');
+            }  
     };
     function lastHand(obj)
     {
             var options = {
                 "action":"last_hand"
             };
+            if (confirm('Would you like to remove the last played hand?'))
+            {
+                $.post(controller,options, function(json){
+                    
+                    if (json.return)
+                        location.reload();
+                });
+            }
             
-            $.post(controller,options, function(json){
-                if (json.return)
-                    locaction.reload();
-            },'json');
     }
 
      var transforms = {
@@ -339,11 +347,11 @@ function showGameControls(container)
                                              }},
                                              {"<>":"div","class":"form-group row","html":[
                                              {"<>":"div","class":"col-sm-12","html":[
-                                                     {"<>":"button","type":"submit","class":"btn btn-primary btn-block btn-large","html":"Add Hand"}
+                                                     {"<>":"button","type":"submit","class":"btn btn-primary btn-block btn-large","html":"Add Hand","onclick":addHand}
                                                      ]}
                                              ]},
                                              {"<>":"div","class":"form-group row","html":[
-                                                     {"<>":"input","type":"hidden","name":"action","value":"add_hand","class":"form-control","onclick":addHand}
+                                                     {"<>":"input","type":"hidden","name":"action","value":"add_hand","class":"form-control"}
                                              ]}
                                      ]},
                                      {"<>":"br","html":""},
@@ -375,7 +383,7 @@ function showGameControls(container)
          'action':"controls"
      };
      $.post(controller, options, function(json){
-        console.log(json);
+        
         if (json.return)
             $(container).json2html(json,transforms.control);
     },'json');

@@ -288,6 +288,7 @@ class Game
             if ( $this->isPlaying($user_id, $game_id) &&
                 !$this->isPlaying(null    , $game_id))
             {
+                
                 $total_score = array_sum(array($player1_score, 
                                                 $player2_score, 
                                                 $player3_score, 

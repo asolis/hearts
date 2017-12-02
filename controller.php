@@ -278,13 +278,32 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'join')
  */
 else if (!empty($_POST['action']) && $_POST['action'] == 'add_hand')
 {
-    $result = $game->addHand($_SESSION['id'], 
+    $total  = $_POST['player1_score'] +
+            $_POST['player2_score'] +
+            $_POST['player3_score'] +
+            $_POST['player4_score'];
+
+    $valid  = False;
+    $result = 0;
+    if ($total == 26 || $total == (26 * 3))
+    {
+        $valid  = True;
+        $result = $game->addHand($_SESSION['id'], 
                             $_SESSION['CURRENT_GAME'],
                             $_POST['player1_score'],
                             $_POST['player2_score'],
                             $_POST['player3_score'],
                             $_POST['player4_score']);
-    $output['data'] = $result;
+    }
+
+    if (!$valid)
+    {
+        $output['message'] = 'Invalid score';
+    }
+
+    $output['return'] = $valid && $result;
+    $output['data']   = $result;
+    
     print json_encode($output);
 }
 /**
@@ -299,7 +318,7 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'last_hand')
     if ($hands)
     {
         $last_hand = array_pop($hands);
-        $deleted = $game->removeHand($_SESSION['id'],
+        $deleted = $game->deleteHand($_SESSION['id'],
                                     $_SESSION['CURRENT_GAME'],
                                     $last_hand['id']);
         
