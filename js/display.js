@@ -7,8 +7,130 @@ __version__   = "1.0"
 */
 var controller = 'controller.php';
 
-function showStats(container, options)
+
+function input_invalid(container, input_name, message)
 {
+    var input = $(sprintf("$s form input[name='$s']", container, input_name));
+    var feedback = input.next();
+    input.addClass('is-invalid');
+    feedback.html(message);
+}
+function clearFormErrMsgs(container)
+{
+    $(sprintf('$s form input.is-invalid', container)).removeClass('is-invalid');
+    $(sprintf('$s form div.invalid-feedback', container)).html('');
+}
+function setFormErrMsgs(container, messages)
+{
+    $.each(messages, function(column, msg){
+        input_invalid(container, column, msg);
+    });
+}
+
+function logout()
+{
+    var options = {
+        "action": "logout"
+    };
+    $.post(controller, options, function(json){
+        if (json.return)
+            location.reload();
+    },'json');
+}
+
+
+function showProfile(container)
+{
+    function updateProfile(obj)
+    {
+        obj.event.preventDefault();
+
+        var inputs = $(sprintf('$s form', container)).serializeArray();
+
+        for (var i = 0; i < inputs.length; i++)
+            if (inputs[i].name == 'password' && inputs[i].value)
+                inputs[i].value = $.md5(inputs[i].value);
+
+        $.post(controller, inputs, function(json)
+        {
+            clearFormErrMsgs(container);
+            if (!json.return)
+                setFormErrMsgs(container, json.message);
+            else
+            {
+                window.location.href = 'home.php';
+            }
+            console.log(json);
+        }, 'json');
+    }
+
+    
+    var transform = {"<>":"div","class":"nb-card","html":[
+        {"<>":"div","class":"card ","html":[
+            {"<>":"div","class":"card-header ","html":[
+                {"<>":"span","html":"Profile Information"}
+              ]},
+            {"<>":"div","class":"card-body tab-content d-flex h-100","html":[
+                {"<>":"div","class":"tab-pane w-100 active align-self-center pt-5", "role":"tabpanel","children":[
+                    {"<>":"form", "novalidate":"", "html":[
+                        {"<>":"div","class":"form-group row","html":[
+                            {"<>":"label","class":"col-sm-3 col-form-label","html":"First Name"},
+                            {"<>":"div","class":"col-sm-9","html":[
+                                {"<>":"input", "class":"form-control", "type":"text","name":"first_name","value":"${first_name}", "required":"required"},
+                                {"<>":"div",   "class":"invalid-feedback", "html":""}
+                              ]}
+                          ]},
+                        {"<>":"div","class":"form-group row","html":[
+                            {"<>":"label","class":"col-sm-3 col-form-label","html":"Last Name"},
+                            {"<>":"div","class":"col-sm-9","html":[
+                                {"<>":"input", "class":"form-control", "type":"text","name":"last_name","value":"${last_name}", "required":"required"},
+                                {"<>":"div", "class":"invalid-feedback", "html":""}
+                              ]}
+                          ]},
+                        {"<>":"div","class":"form-group row","html":[
+                            {"<>":"label","class":"col-sm-3 col-form-label","html":"Username"},
+                            {"<>":"div","class":"col-sm-9","html":[
+                                {"<>":"input", "class":"form-control","type":"text","name":"username","value":"${username}", "required":"required"},
+                                {"<>":"div", "class":"invalid-feedback", "html":""}
+                              ]}
+                          ]},
+                        {"<>":"div","class":"form-group row","html":[
+                            {"<>":"label","class":"col-sm-3 col-form-label","html":"Password"},
+                            {"<>":"div","class":"col-sm-9","html":[
+                                {"<>":"input", "class":"form-control" ,"type":"password","name":"password","value":"","required":"required"},
+                                {"<>":"div", "class":"invalid-feedback", "html":""}
+                              ]}
+                          ]},
+                        {"<>":"div","class":"form-group","html":[
+                            {"<>":"input","type":"hidden","name":"action","value":"update_profile","class":"form-control"}
+                          ]},
+                        {"<>":"br"},
+                        {"<>":"button","id":"update","type":"submit","class":"btn btn-primary btn-block btn-large","html":"Update", "onclick":updateProfile}
+                      ]}
+                ]}
+              ]}
+          ]}
+      ]};
+      
+      $.post(controller, {'action':'profile'}, function(json)
+      { 
+          if (json.return)
+          {
+            $(container).html('');
+            $(container).json2html(json.data, transform);    
+          }
+      },'json');
+      
+}
+
+
+function showRankings(container, stats_column)
+{
+    var options    = {
+        "action": "stats",
+        "column": stats_column
+    };
+
     $.getJSON(controller, options, function(data){
         
         var transforms = {
@@ -16,7 +138,7 @@ function showStats(container, options)
                 {"<>":"div","class":"card tex ","html":[
                     {"<>":"div","class":"card-header ","html":[
                         {"<>":"span", "class":"float-right fa fa-refresh", "aria-hidden":"true", "onclick":function(e){
-                            showStats(container, options);
+                            (container, options);
                         }},
                         {"<>":"h5","html":sprintf("Rankings  <small>| $s</small> ", options.column)}
                     ]},
@@ -27,24 +149,19 @@ function showStats(container, options)
                                     {"<>":"th","html":"Rank"},
                                     {"<>":"th","html":"Player"},
                                     {"<>":"th", "onclick":function(e){ 
-                                        options.column = 'wins';
-                                        showStats(container, options);
+                                        (container, 'wins');
                                     }, "children":[{"<>":"a", "href":"#","html":"W"}]},
                                     {"<>":"th", "onclick":function(e){ 
-                                        options.column = 'losses';
-                                        showStats(container, options);
+                                        (container, 'losses');
                                     }, "children":[{"<>":"a", "href":"#","html":"L"}]},
                                     {"<>":"th", "onclick":function(e){ 
-                                        options.column = 'plays';
-                                        showStats(container, options);
+                                        (container, 'plays');
                                     }, "children":[{"<>":"a", "href":"#","html":"P"}]},
-                                    {"<>":"th", "onclick":function(e){ 
-                                        options.column = 'shots';
-                                        showStats(container, options);
+                                    {"<>":"th", "onclick":function(e){
+                                        (container, 'shots');
                                     }, "children":[{"<>":"a", "href":"#","html":"S"}]},
                                     {"<>":"th", "onclick":function(e){ 
-                                        options.column = 'cheats';
-                                        showStats(container, options);
+                                        (container, 'cheats');
                                     }, "children":[{"<>":"a", "href":"#","html":"C"}]}
                                   ]}
                               ]},
@@ -72,28 +189,32 @@ function showStats(container, options)
 }
 
 
-function showGame(container, options)
+function showGame(container, game_id)
 {
+    var options    = {
+        "action": "game",
+        "game_id": game_id
+    };
+    
+
     $.getJSON(controller, options, function(data){
         
         var transforms = {
             "card":{"<>":"div","class":"container mt-3","html":[
                 {"<>":"div","class":"card tex ","html":[
                     {"<>":"div","class":"card-header ","children":[
-                        {"<>":"span", "class":"float-right fa fa-refresh", "aria-hidden":"true", "onclick":function(e){
-                            showGame(container, options);
-                        }},
-                        {"<>":"h5","html":"Game Code: ${game_id}"}
+                        {"<>":"span", "class":"float-right fa fa-refresh", "aria-hidden":"true", "onclick":function(e){ showGame(container, options);}},
+                        {"<>":"div","html":"Game Code: ${game_id}"}
                     ]},
                     {"<>":"div","class":"card-body text-center card-body-no-padding","html":[
                         {"<>":"table","class":"table table-sm table-bordered table-dark","html":[
                             {"<>":"thead","html":[
                                 {"<>":"tr","html":[
                                     {"<>":"th","html":"#"},
-                                    {"<>":"th","html":"Player1"},
-                                    {"<>":"th","html":"Player2"},
-                                    {"<>":"th","html":"Player3"},
-                                    {"<>":"th","html":"Player4"}
+                                    {"<>":"th","html":"${players.player1}"},
+                                    {"<>":"th","html":"${players.player2}"},
+                                    {"<>":"th","html":"${players.player3}"},
+                                    {"<>":"th","html":"${players.player4}"}
                                 ]},
                                 {"<>":"tr", "class":"total-score","html":[
                                     {"<>":"td","html":"${scores.index}"},
@@ -132,18 +253,132 @@ function showGame(container, options)
 }
 
 
-function showAlert(container, data)
+function showHome(container)
 {
-    var transform = {"<>":"div","class":"alert alert-warning alert-dismissible fade show","role":"alert","html":[
-        {"<>":"span","html":"${message}"},
-        {"<>":"button","type":"button","class":"close","data-dismiss":"alert","aria-label":"Close","html":[
-            {"<>":"span","aria-hidden":"true","html":"×"}
+    function newGame(event)
+    {
+        var options = {
+            'action': 'create',
+        };
+        $.post(controller, options, function(data){
+            if (data.return)
+                location.reload();
+        },'json');
+    }
+    function joinGame(event)
+    {
+        var options = {
+            'action': 'join',
+            'game_id': $('#join_game_id').val()
+        };
+        $.post(controller, options, function(data){
+            if (data.return)
+                location.reload();
+        },'json');
+    }
+    var transform = {"<>":"div","class":"container","html":[
+        {"<>":"div","class":"card m-2 ","html":[
+            {"<>":"div","class":"card-body p-5 ","html":[
+                {"<>":"button","id":"login","class":"btn btn-primary btn-block btn-large","html":"New Game","onclick":newGame},
+                {"<>":"br","html":""},
+                {"<>":"div","class":"input-group","html":[
+                    {"<>":"input","id":"join_game_id","type":"text","pattern":"\\d*", "class":"form-control","placeholder":"Game Code"},
+                    {"<>":"span","class":"input-group-btn","html":[
+                        {"<>":"button","class":"btn btn-primary","type":"button","html":"Join Game","onclick":joinGame}
+                      ]}
+                  ]}
+              ]}
           ]}
       ]};
       $(container).html('');
-      $(container).json2html(data, transform);
+      $(container).json2html([1], transform);
 }
 
 
+function showGameControls(container)
+{
+    function addHand(obj)
+    {
+            obj.event.preventDefault();
+            var selects   = $(sprintf('$s form',container)).serializeArray();
+            $.post(controller,selects, function(json){
+                if (json.return)
+                    locaction.reload();
+            },'json');
+    };
+    function finishGame(obj)
+    {
+            var options = {
+                "action":"finish"
+            };
+            
+            $.post(controller,options, function(json){
+                if (json.return)
+                    locaction.reload();
+            },'json');
+    };
+    function lastHand(obj)
+    {
+            var options = {
+                "action":"last_hand"
+            };
+            
+            $.post(controller,options, function(json){
+                if (json.return)
+                    locaction.reload();
+            },'json');
+    }
 
+     var transforms = {
+             'control':{"<>":"div", "class":"container", "html":[
+                        {"<>":"div","class":"card","html":[
+                             {"<>":"div","class":"card-body","html":[
+                                     {"<>":"form","html":[
+                                             {"<>":"div","class":"row no-gutters","html":function(obj){
+                                                     return $.json2html(obj.data, transforms.cols);
+                                             }},
+                                             {"<>":"div","class":"form-group row","html":[
+                                             {"<>":"div","class":"col-sm-12","html":[
+                                                     {"<>":"button","type":"submit","class":"btn btn-primary btn-block btn-large","html":"Add Hand"}
+                                                     ]}
+                                             ]},
+                                             {"<>":"div","class":"form-group row","html":[
+                                                     {"<>":"input","type":"hidden","name":"action","value":"add_hand","class":"form-control","onclick":addHand}
+                                             ]}
+                                     ]},
+                                     {"<>":"br","html":""},
+                                     {"<>":"div","class":"form-group row","html":[
+                                     {"<>":"div","class":"col-sm-12","html":[
+                                             {"<>":"button","class":"btn btn-danger btn-block btn-large","html":"Remove Last Hand","onclick":lastHand}
+                                             ]}
+                                     ]},
+                                     {"<>":"br","html":""},
+                                     {"<>":"div","class":"form-group row","html":[
+                                     {"<>":"div","class":"col-sm-12","html":[
+                                             {"<>":"button","class":"btn btn-success btn-block btn-large","html":"Finish Game","onclick":finishGame}
+                                             ]}
+                                     ]}
+                             ]}
+                     ]}
+                ]},
+             'cols' : {"<>":"div","class":"col","html":[
+                     {"<>":"div","class":"form-group text-center","html":[
+                             {"<>":"label","class":"control-label","html":"${username}"},
+                             {"<>":"select","class":"form-control","name":"${label}","html":function(e){
+                                     return $.json2html(Array.from(Array(27).keys()),transforms.options);
+                             }}
+                     ]}
+             ]},
+             'options':  {"<>":"option","html":"$d", "value":"$d"}
+     };
+     var options = {
+         'action':"controls"
+     };
+     $.post(controller, options, function(json){
+        console.log(json);
+        if (json.return)
+            $(container).json2html(json,transforms.control);
+    },'json');
+     
+}
 

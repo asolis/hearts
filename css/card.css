@@ -73,6 +73,16 @@
     background-color:rgba(21, 25, 29, 0.514) !important;
 }
 
-.nb-card .col-form-label{
+.nb-card .col-form-label, .control-label{
     color:rgb(207, 218, 236);
+}
+
+.row.no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+  
+}
+.row.no-gutters>.col {
+    padding-right: 2.5px;
+      padding-left: 2.5px;
 }

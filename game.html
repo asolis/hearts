@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zxx" class="no-js">
+<html>
 <head>
 	<!-- Mobile Specific Meta -->
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -23,139 +23,40 @@
         <link rel="stylesheet" href="css/background.css?asdf">
         <link rel="stylesheet" href="vendor/bootstrap-4/css/bootstrap.min.css">
         <link rel="stylesheet" href="vendor/font-awesome-4.7.0/css/font-awesome.min.css">
-        
-        <link rel="stylesheet" href="css/card.css?aaasdfsass">
+        <link rel="stylesheet" href="css/card.css">
 
 	</head>
 	<body>
-                <div class="pos-f-t">
-                        
-                        <nav class="navbar navbar-dark bg-dark">
-                                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
-                                <span class="navbar-toggler-icon"></span>
-                                </button>
-                        </nav>
-                        <div class="collapse" id="navbarToggleExternalContent">
-                                <div class="bg-dark p-3">
-                                        <ul class="navbar-nav mr-auto">
-                                                <li class="nav-item">
-                                                        <div class="input-group">
-                                                                
-                                                                <span class="input-group-btn">
-                                                                        <button class="btn btn-primary" type="button">Join Game!</button>
-                                                                </span>
-                                                                <input type="text" class="form-control" placeholder="Game Code">
-                                                        </div>
-                                                </li>
-                                                <br>
-                                                <li class="nav-item">
-                                                        <a class="nav-link" href="#">Create Game</a>
-                                                </li>
-                                                
-                                                <li class="nav-item">
-                                                        <a class="nav-link" href="#">Rankings</a>
-                                                </li>   
-                                        </ul>   
-                                </div>
-                        </div>
+                <div class="input-group container pt-5">
+                    <input id="search" type="text" pattern="\d*" class="form-control" placeholder="Search Game" >
+                    <span class="input-group-btn">
+                      <button id="go" class="btn btn-primary" type="button">Watch!</button>
+                    </span>
                 </div>
-               
-                <div class="container mt-5">
-                        
-                        <div class="card tex ">
-                                <div class="card-header ">
-                                        <h5>Game Code: 32</h5>
-                                </div>
-                                <div class="card-body text-center">
-                                        <table class="table table-sm table-bordered table-dark">
-                                                <thead >
-                                                <tr>
-                                                <th>#</th>
-                                                <th>Player1</th>
-                                                <th>Player2</th>
-                                                <th>Player3</th>
-                                                <th>Player4</th>
-                                                </tr>
-                                                <tr >
-                                                        <td></td>
-                                                        <td>26</td>
-                                                        <td>10</td>
-                                                        <td>40</td>
-                                                        <td>25</td>
-                                                </tr>
-                                                </thead>
-                                                <tbody >
-                                                <tr>
-                                                                <th>1</th>
-                                                                <td>26</td>
-                                                                <td>10</td>
-                                                                <td>40</td>
-                                                                <td>25</td>
-                                                </tr>
-                                                <tr>
-                                                <th scope="row"><button type="button" class="btn btn-danger"><i class="fa fa-times" aria-hidden="true"></i></button></th>
-                                                <td>26</td>
-                                                <td>10</td>
-                                                <td>40</td>
-                                                <td>25</td>
-                                                </tr>
-                                                
-                                                <th scope="row"></th>
-                                                <td>
-                                                        <select class="form-control" id="exampleSelect1">
-                                                                <option>1</option>
-                                                                <option>2</option>
-                                                                <option>3</option>
-                                                                <option>4</option>
-                                                                <option>5</option>
-                                                        </select>
-                        
-                                                </td>
-                                                <td>
-                                                        <select class="form-control" id="exampleSelect1">
-                                                                <option>1</option>
-                                                                <option>2</option>
-                                                                <option>3</option>
-                                                                <option>4</option>
-                                                                <option>5</option>
-                                                        </select>
-                        
-                                                </td>
-                                                <td>
-                                                        <select class="form-control" id="exampleSelect1">
-                                                                <option>1</option>
-                                                                <option>2</option>
-                                                                <option>3</option>
-                                                                <option>4</option>
-                                                                <option>5</option>
-                                                        </select>
-                        
-                                                </td>
-                                                <td>
-                                                        <select class="form-control" id="exampleSelect1">
-                                                                <option>1</option>
-                                                                <option>2</option>
-                                                                <option>3</option>
-                                                                <option>4</option>
-                                                                <option>5</option>
-                                                        </select>
-                        
-                                                </td>
-                                                </tr>
-                                                
-                                                </tbody>
-                                        </table>
-                                        <br>
-                                        <button type="submit" class="btn btn-primary btn-block btn-large">Add</button>
-                                        <br> 
-                                </div>
-                        </div>
-                </div>
-           	
-	
+                <div id="game"></div>
+                
 		<!-- jQuery first, then Tether, then Bootstrap JS. -->
                 <script src="vendor/jquery3.2.1/jquery.min.js" ></script>
-		<script src="vendor/popper1.12.9/popper.min.js"></script>
-                <script src="vendor/bootstrap-4/js/bootstrap.min.js"></script>	
+                <script src="vendor/popper1.12.9/popper.min.js"></script>
+                
+                <script src="vendor/bootstrap-4/js/bootstrap.min.js"></script>
+                <script src="vendor/json2html-sprintf/sprintf.js"></script>
+                <script src="vendor/json2html-sprintf/json2html.js"></script>
+                <script src="vendor/json2html-sprintf/jquery.json2html.js"></script>
+                <script src="js/display.js?as"></script>	
+                <script>
+                        $(function() {
+
+                             $('#go').click(function(event){
+                                
+                                var game_id = $('#search').val();
+                                showGame('#game', game_id);
+                             });
+                                
+                                
+                                
+                        });
+                </script>
+
     </body>
 </html>

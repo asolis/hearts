@@ -9,7 +9,10 @@ __version__   = "1.0"
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
-require_once('authentication.php');
+session_start();
+if (empty($_SESSION["authenticated"]))
+    header("Location: index.html");
+
 ?>
 
 <!DOCTYPE html>
@@ -57,16 +60,21 @@ require_once('authentication.php');
                     <div class="bg-dark p-3">
                             <ul class="navbar-nav mr-auto">
                                     <li class="nav-item">
-                                            <a class="nav-link" href="#">Update Profile</a>
-                                    </li> 
+                                            <a id="update_profile" class="nav-link" href="#">Update Profile</a>
+                                    </li>
                                     <li class="nav-item">
-                                            <a class="nav-link" href="?action=logout">Log Out</a>
+                                            <a id="rankings" class="nav-link" href="#">Rankings</a>
+                                    </li>  
+                                    <li class="nav-item">
+                                            <a id="logout" class="nav-link" href="#">Log Out</a>
                                     </li>
                             </ul>   
                     </div>
             </div>
             
             <div id="container"></div>
+            <br>
+            <div id="controls"></div>
 
 
 		<!-- jQuery first, then Tether, then Bootstrap JS. -->
@@ -78,111 +86,35 @@ require_once('authentication.php');
                 <script src="vendor/json2html-sprintf/json2html.js"></script>
                 <script src="vendor/json2html-sprintf/jquery.json2html.js"></script>
                 <script src="vendor/jQuery-MD5/jquery.md5.js"></script>
-                <script src="js/display.js?aass"></script>	
+                <script src="js/display.js?asasaasasaasss"></script>	
                 <script>
                     $(function() {
-
-function showProfile(container)
-{
-    function update(obj)
-    {
-        var inputs = $(sprintf('$s form', container)).serializeArray();
-
-        for (var i = 0; i < inputs.length; i++)
-            if (inputs[i].name == 'password')
-                inputs[i].value = $.md5(inputs[i].value);
-
-        $.post(controller, inputs, function(output)
-        {
-            if (output)
-            {
-                var json = JSON.parse(output);
-               // window.location.href = window.location.href;
-                console.log(json);
-            }
-        });
-        
-        obj.event.preventDefault();
-    }
-
-    function set_invalid(container, input_name, message)
-    {
-        var input = $(sprintf("$s form input[name='$s']", container, input_name));
-        var feedback = input.next();
-        input.addClass('is-invalid');
-        feedback.html(message);
-    }
-
-    var transform = {"<>":"div","class":"nb-card","html":[
-        {"<>":"div","class":"card ","html":[
-            {"<>":"div","class":"card-header ","html":[
-                {"<>":"span","html":"Profile Information"}
-              ]},
-            {"<>":"div","class":"card-body tab-content d-flex h-100","html":[
-                {"<>":"div","class":"tab-pane w-100 active align-self-center", "role":"tabpanel","children":[
-                    {"<>":"form", "novalidate":"", "html":[
-                        {"<>":"div","class":"form-group row","html":[
-                            {"<>":"label","class":"col-sm-3 col-form-label","html":"First Name"},
-                            {"<>":"div","class":"col-sm-9","html":[
-                                {"<>":"input", "class":"form-control", "type":"text","name":"first_name","value":"${first_name}", "required":"required"},
-                                {"<>":"div",   "class":"invalid-feedback", "html":""}
-                              ]}
-                          ]},
-                        {"<>":"div","class":"form-group row","html":[
-                            {"<>":"label","class":"col-sm-3 col-form-label","html":"Last Name"},
-                            {"<>":"div","class":"col-sm-9","html":[
-                                {"<>":"input", "class":"form-control", "type":"text","name":"last_name","value":"${last_name}", "required":"required"},
-                                {"<>":"div", "class":"invalid-feedback", "html":""}
-                              ]}
-                          ]},
-                        {"<>":"div","class":"form-group row","html":[
-                            {"<>":"label","class":"col-sm-3 col-form-label","html":"Username"},
-                            {"<>":"div","class":"col-sm-9","html":[
-                                {"<>":"input", "class":"form-control","type":"text","name":"username","value":"${username}", "required":"required"},
-                                {"<>":"div", "class":"invalid-feedback", "html":""}
-                              ]}
-                          ]},
-                        {"<>":"div","class":"form-group row","html":[
-                            {"<>":"label","class":"col-sm-3 col-form-label","html":"Password"},
-                            {"<>":"div","class":"col-sm-9","html":[
-                                {"<>":"input", "class":"form-control" ,"type":"password","name":"password","value":"","required":"required"},
-                                {"<>":"div", "class":"invalid-feedback", "html":""}
-                              ]}
-                          ]},
-                        {"<>":"div","class":"form-group","html":[
-                            {"<>":"input","type":"hidden","name":"action","value":"update_profile","class":"form-control"}
-                          ]},
-                        {"<>":"br"},
-                        {"<>":"button","id":"update","type":"submit","class":"btn btn-primary btn-block btn-large","html":"Update", "onclick":update}
-                      ]}
-                ]}
-              ]}
-          ]}
-      ]};
-      
-      $.post(controller, {'action':'profile'}, function(output)
-      { 
-          if (!output)
-            return;
-          var json = JSON.parse(output);
-
-          if (json.return)
-          {
-            $(container).html('');
-            $(container).json2html(json.data, transform);
-            set_invalid(container, 'first_name', "helo");
-          }
-      });
-      
-}
+                        $('#update_profile').click(function(){
+                            showProfile('#container');
+                            $('#navbarToggleExternalContent').collapse('hide');
+                        });
+                        $('#rankings').click(function(){
+                            showRankings('#container', "wins");
+                            $('#navbarToggleExternalContent').collapse('hide');
+                        })
+                        $('#logout').click(function(){
+                            logout();
+                        });
 
 
-
-
-
+                        var CURRENT_GAME = <?php print $_SESSION['CURRENT_GAME']; ?>;
                         
-                        showProfile('#container');
-                        
+
+                        if (CURRENT_GAME == -1)
+                        {
+                            showHome(container);
+                        } 
+                        else
+                        {
+                            showGame('#container',CURRENT_GAME);
+                            showGameControls('#controls');
+                        }
+
                     });
                 </script>
     </body>

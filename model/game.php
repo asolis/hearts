@@ -85,6 +85,7 @@ class Game
             return $this->db->select('hand', array('*'), array('game_id' => $game_id),'AND', 'ORDER BY time');
         }
         
+        
         /**
          * finis a game and stores the stats:
          *  wins, losses, plays, shots, cheats
@@ -201,7 +202,7 @@ class Game
         }
 
         /**
-         * associate arrays of players ids playing game_id
+         * associative arrays of players ids playing game_id
          */
         function playersIds($game_id)
         {
@@ -219,6 +220,22 @@ class Game
             return $players;
         }
         
+
+        /**
+         * associative array of players names
+         */
+        function playersUsername($game_id)
+        {
+            $playersIds = $this->playersIds($game_id);
+            foreach ($playersIds as $player => $id)
+            {
+                $result = $this->db->select('player', array('username'), array('id'=> $id));
+                if ($result)
+                    $playersIds[$player] = $result[0]['username'];
+            }
+            return $playersIds;
+        }
+
         /**
          * 
          */

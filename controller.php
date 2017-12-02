@@ -24,6 +24,57 @@ $output = array(
     'message'=> ''
 );
 
+function checkEmpty($variable, $fields, &$messages)
+{
+
+    $empty = False;
+    foreach($fields as $field)
+    {
+        if (empty($variable[$field]))
+        {
+            $messages[$field] = 'Empty';  
+            $empty = True;  
+        }
+    }
+    return $empty;
+}
+/**
+ * Login action sets the current session values
+ */
+if ( !empty($_POST['action']) && $_POST['action'] == 'login')
+{
+    $messages = array();
+    $empty    = checkEmpty($_POST,['username', 'password'], $messages);
+    
+    if (!$empty)
+    {
+        $result = $player->valid($_POST['username'], $_POST['password']);
+        if ($result)
+        {
+            $_SESSION['authenticated'] = TRUE;
+            $_SESSION['CURRENT_GAME']  = -1;
+            $_SESSION = array_merge($_SESSION, $result[0]);
+        }
+        else
+        {
+            $messages['username'] = 'Wrong user and password';
+            $messages['password'] = '';
+        }
+    }
+    $output['return'] = !$empty && $result;
+    $output['data']   = null;
+    $output['message']= $messages;
+    
+    print json_encode($output);
+} 
+/**
+ * logout and destroy session
+ */
+else if ( !empty($_POST['action']) &&  $_POST['action'] == 'logout' )
+{
+    session_destroy();
+    print json_encode($output);
+} 
 /**
  * Show games stats:
  * requires 
@@ -31,7 +82,7 @@ $output = array(
  * optional
  *      column
  */
-if ( !empty($_GET['action']) && $_GET['action'] == 'stats') 
+else if ( !empty($_GET['action']) && $_GET['action'] == 'stats') 
 {
     if (!empty($_GET['column']))
     {
@@ -72,10 +123,15 @@ else if ( !empty($_GET['action']) && $_GET['action'] == 'game')
             $scores[$key] += $hand[$key];
 
     $scores['index'] = 'T';
-            
+    
+    $usernames = array_map(function($user){
+        return ($user == null) ? '...' : $user;
+    },$game->playersUsername($_GET['game_id']));
+
     $game = array(
         'game_id' => $_GET['game_id'],
         'hands'   => $hands,
+        'players' => $usernames,
         'scores'  => $scores
     );
     
@@ -84,7 +140,7 @@ else if ( !empty($_GET['action']) && $_GET['action'] == 'game')
     print json_encode($output);
 }
 /**
- * Signup Account. (POST)
+ * Register Account. (POST)
  * requires:
  *      action
  *      first_name,
@@ -92,28 +148,32 @@ else if ( !empty($_GET['action']) && $_GET['action'] == 'game')
  *      username,
  *      password,
  */
-else if (!empty($_POST['action']) && 
-    !empty($_POST['first_name'])  && 
-    !empty($_POST['last_name'])   && 
-    !empty($_POST['username'])    && 
-    !empty($_POST['password'])    &&
-    $_POST['action'] == 'register')
+else if (!empty($_POST['action']) && $_POST['action'] == 'register')
 {
-    
    
-    $return = $player->create($_POST['first_name'], 
-                              $_POST['last_name'], 
-                              $_POST['username'], 
-                              $_POST['password']);
+    $messages = [];
+    $empty    = checkEmpty($_POST,['first_name', 'last_name', 
+                                'username', 'password'], $messages );
+    if (!$empty)
+    {
+        $result = boolval($player->create($_POST['first_name'], 
+                                  $_POST['last_name'], 
+                                  $_POST['username'], 
+                                  $_POST['password']));
+        if (!$result)
+                $messages['username'] = 'Username taken';
+    }
     
-    $output['return'] = boolval($return);
-
-    
-    if (!$output['return'])
-        $output['message'] = 'Username taken';
+    $output['return'] = !$empty && $result;
+    $output['data']   = null;
+    $output['message']= $messages;
     print json_encode($output);
 }
-
+/*
+*   Retrieves profile information from sesssion
+*   Requires:
+*       action
+*/
 
 else if (!empty($_POST['action']) && $_POST['action'] == 'profile')
 {
@@ -127,27 +187,141 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'profile')
     print json_encode($output);
 }
 
-
+/**
+ * Updates the session profile
+ * requires
+ *      action
+ */
 else if (!empty($_POST['action']) && $_POST['action'] == 'update_profile')
 {
     
+    $messages = array();
+    $empty    = checkEmpty($_POST,['first_name', 'last_name', 
+                                   'username', 'password'], $messages);
     
-    
-    $return = $player->updateProfile($_SESSION['id'], 
-                            $_POST['first_name'], 
-                            $_POST['last_name'], 
-                            $_POST['username'], 
-                            $_POST['password']);
-    $output['return']   = boolval($return);
-    if ($output['return'])
+    if (!$empty)
     {
-        $_SESSION['first_name'] = $_POST['first_name'];
-        $_SESSION['last_name']  = $_POST['last_name'];
-        $_SESSION['username']   = $_POST['username'];
+        $result = boolval($player->updateProfile($_SESSION['id'], 
+                                        $_POST['first_name'], 
+                                        $_POST['last_name'], 
+                                        $_POST['username'], 
+                                        $_POST['password']));
+        if ($result)
+        {
+            $_SESSION['first_name'] = $_POST['first_name'];
+            $_SESSION['last_name']  = $_POST['last_name'];
+            $_SESSION['username']   = $_POST['username'];
+        }
+        else 
+        {
+            $messages['username'] = 'Username taken';
+        }    
     }
-    else {
-        $output['message'] = array("username" => "Username taken"); 
+
+    $output['return'] = !$empty && $result;
+    $output['data']   = null;
+    $output['message']= $messages;
+    
+    print json_encode($output);
+}
+/**
+ * creates a new game and sets it as the current_game
+ * requires
+ *  action
+ */
+else if (!empty($_POST['action']) && $_POST['action'] == 'create')
+{
+    $_SESSION['CURRENT_GAME'] = $game->create($_SESSION['id']);
+    $output['data'] = $_SESSION['CURRENT_GAME'];
+    print json_encode($output);
+}
+/**
+ * finish the current_game
+ * requires
+ * action
+ */
+else if (!empty($_POST['action']) && $_POST['action'] == 'finish')
+{
+    $finished = $game->finish($_SESSION['id'],$_SESSION['CURRENT_GAME']);
+    if ($finished)
+    {
+        $_SESSION['CURRENT_GAME'] = -1;
     }
+        
+    $output['return'] = $finished;
+    print json_encode($output);
+}
+/**
+ * Player joins a game defined by game_id
+ * requires
+ *  action
+ *  game_id
+ */
+else if (!empty($_POST['action']) && $_POST['action'] == 'join')
+{
+    $joined = $game->join($_SESSION['id'], $_POST['game_id']);
+    if ($joined)
+        $_SESSION['CURRENT_GAME'] = $_POST['game_id'];
+    
+    $output['return'] = $joined;
+    $output['data'] = $_SESSION['CURRENT_GAME'];
+    print json_encode($output);
+}
+/**
+ * Add a hand to the current game
+ * requieres
+ *  action
+ *  player1_score
+ *  player2_score
+ *  player3_score
+ *  player4_score
+ */
+else if (!empty($_POST['action']) && $_POST['action'] == 'add_hand')
+{
+    $result = $game->addHand($_SESSION['id'], 
+                            $_SESSION['CURRENT_GAME'],
+                            $_POST['player1_score'],
+                            $_POST['player2_score'],
+                            $_POST['player3_score'],
+                            $_POST['player4_score']);
+    $output['data'] = $result;
+    print json_encode($output);
+}
+/**
+ * Removes the last hand in current game
+ * requieres
+ *  action
+ */
+else if (!empty($_POST['action']) && $_POST['action'] == 'last_hand')
+{
+    $hands = $game->getHands($_SESSION['CURRENT_GAME']);
+    
+    if ($hands)
+    {
+        $last_hand = array_pop($hands);
+        $deleted = $game->removeHand($_SESSION['id'],
+                                    $_SESSION['CURRENT_GAME'],
+                                    $last_hand['id']);
+        
+
+    }
+    print json_encode($output);
+}
+
+else if (!empty($_POST['action']) && $_POST['action'] == 'controls')
+{
+    $players  = $game->playersUsername($_SESSION['CURRENT_GAME']);
+    $complete = True;
+
+    $result  = array_map(function($number, $label, $username) use (&$complete) {
+        $complete = $complete && ($username != null);
+        $username = ($username == null)? '...' : $username;
+        return ['label'=> sprintf('%s_score',$label), 'username'=>$username, 'number' => $number]; 
+    },[1,2,3,4], array_keys($players),$players);
+
+    $output['return'] = $complete;
+    $output['data']   = $result;
+    
     print json_encode($output);
 }
 ?>
