@@ -89,6 +89,10 @@ footer, .navbar.bg-dark , .bg-dark {
 #navbarToggleExternalContent {
     margin-top: 58px;
     background-color:rgb(61, 61, 61);
+ 
+}
+#navbarToggleExternalContent a {
+    color: white;
 }
 #container {
     margin-top: 80px;
