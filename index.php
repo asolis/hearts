@@ -1,3 +1,19 @@
+<?php
+/* 
+
+
+__author__    = "Andrés Solis Montero"
+__copyright__ = "Copyright 2017"
+__version__   = "1.0"  
+*/
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
+session_start();
+if (!empty($_SESSION["authenticated"]))
+    header("Location: home.php");
+
+?>
 <!DOCTYPE html>
 <html lang="zxx" class="no-js">
 <head>
@@ -69,12 +85,14 @@
 															<button id="login" type="submit" class="btn btn-primary btn-block btn-large">Let me in</button>
 													</form>
 															<hr class="divider">
-															<div class="text-center p-2 small">
-																<a href="stats.html">Rankings</a>>
-															</div>
+
 															<div class="text-center p-2 small">
 																	<a href="game.html">Watch Game</a>>
 															</div>
+															<div class="text-center p-2 small">
+																<a href="stats.html">Rankings</a>>
+															</div>
+															
 														
 													
 											</div>
@@ -187,7 +205,7 @@
 							else
 							{
 								
-								window.location.href = 'index.html';
+								location.reload();
 								
 							}
 					},'json');

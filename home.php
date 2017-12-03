@@ -11,7 +11,7 @@ ini_set('display_errors', '1');
 
 session_start();
 if (empty($_SESSION["authenticated"]))
-    header("Location: index.html");
+    header("Location: index.php");
 
 ?>
 
@@ -64,15 +64,20 @@ if (empty($_SESSION["authenticated"]))
             <div class="collapse fixed-top" id="navbarToggleExternalContent">
                     <div class="bg-dark p-3">
                             <ul class="navbar-nav mr-auto">
+                                    
                                     <li class="nav-item">
-                                            <a id="update_profile" class="nav-link" href="#">Update Profile</a>
+                                            <a class="nav-link" href="game.html">Watch Game</a>
                                     </li>
                                     <li class="nav-item">
                                             <a id="rankings" class="nav-link" href="#">Rankings</a>
-                                    </li>  
+                                    </li> 
+                                    <li class="nav-item">
+                                            <a id="update_profile" class="nav-link" href="#">Update Profile</a>
+                                    </li> 
                                     <li class="nav-item">
                                             <a id="logout" class="nav-link" href="#">Log Out</a>
                                     </li>
+                                    
                             </ul>   
                     </div>
             </div>
@@ -92,7 +97,7 @@ if (empty($_SESSION["authenticated"]))
                 <script src="vendor/json2html-sprintf/json2html.js"></script>
                 <script src="vendor/json2html-sprintf/jquery.json2html.js"></script>
                 <script src="vendor/jQuery-MD5/jquery.md5.js"></script>
-                <script src="js/display.js?asasasasdfasdasd"></script>	
+                <script src="js/display.js"></script>	
                 <script>
                     $(function() {
                         $('#update_profile').click(function(){
