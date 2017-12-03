@@ -11,14 +11,18 @@ require_once('db_connection.php');
 
 class Game 
 {
-        private $db = null;
+        private $db     = null;
 
         function __construct($db)
         {
             $this->db = $db;
+            
         }
-
-        function _insert_stat($table, $game_id, $player_id)
+        //-----------Private Functions ------------------
+        /**
+         * insert stats tuple in table
+         */
+        private function _insert_stat($table, $game_id, $player_id)
         {
             $values = array(
                 'game_id'   => $game_id,
@@ -26,23 +30,34 @@ class Game
             );
             return $this->db->insert($table, $values);
         }
-
         /**
-         * A user creates a game. Returns the id of the created game.
+         * deletes all the stats associated with a game_id in
+         * a table
          */
-        function create($user_id)
+        private function _delete_stat($table, $game_id)
         {
             $values = array(
-                'player1' => $user_id,
-                'player2' => null,
-                'player3' => null,
-                'player4' => null,
-                'time_start' => time(),
-                'time_end'   => null
+                'game_id' => $game_id
             );
-            return $this->db->insert('game', $values);
+            return $this->db->delete($table, $values);
         }
-        function rank(&$table, $column)
+        
+        /**
+         * remove all the stats from a game
+         */
+        private function _clear_game_stats($game_id)
+        {
+                $w = $this->_delete_stat('wins',$game_id);
+                $l = $this->_delete_stat('losses',$game_id);
+                $c = $this->_delete_stat('cheats',$game_id);
+                $p = $this->_delete_stat('plays',$game_id);
+                $s = $this->_delete_stat('shots',$game_id);
+                return $w && $l && $c && $p && $s;
+        }
+        /**
+         * helper function to rank the stats table
+         */
+        private function _rank(&$table, $column)
         {
             $prev = null;
             
@@ -63,8 +78,39 @@ class Game
                 $prev = $sub_arr;
             }
         }
+
+
+
+        //--------- Boolean status functions ---------------
         /**
-         * show view stats
+         * is game finished
+         */
+        function isGameFinished($game_id)
+        {
+            $where = array('finished' => "1",
+                           'id'  => $game_id);
+            return $this->db->select('game',array('*'), $where);
+
+        }
+        
+        /**
+         * 
+         */
+        function isPlaying($user_id, $game_id)
+        {
+            $players = $this->getPlayersIds($game_id);
+            foreach($players as $pp => $player_id)
+            {
+                if ($player_id == $user_id)
+                    return True;
+            }
+            return False;
+        }
+
+        
+        //------------ Getters ---------------------
+        /**
+         * show  stats
          */
         function getStats($column = 'wins', $type=SORT_DESC)
         {
@@ -73,7 +119,7 @@ class Game
             $c = array_map(function($row) use ($column){return $row[$column];}, $table);
             array_multisort($c, $type, $table);
 
-            $this->rank($table, $column);
+            $this->_rank($table, $column);
             return $table;
         }
         
@@ -84,17 +130,157 @@ class Game
         {
             return $this->db->select('hand', array('*'), array('game_id' => $game_id),'AND', 'ORDER BY time');
         }
+        /**
+         * associative arrays of players ids playing game_id
+         */
+        function getPlayersIds($game_id)
+        {
+            $players = array('player1' => null,
+                             'player2' => null,
+                             'player3' => null,
+                             'player4' => null);
+
+            $where   = array( 'id' => $game_id );
+            $rows    = $this->db->select('game', array('*'), $where);
+            if ($rows)
+            {
+                return array_intersect_key($rows[0], $players);
+            }
+            return $players;
+        }
         
-        
+
+        /**
+         * associative array of players names
+         */
+        function getPlayersUsernames($game_id)
+        {
+            $playersIds = $this->getPlayersIds($game_id);
+            foreach ($playersIds as $player => $id)
+            {
+                $result = $this->db->select('player', array('username'), array('id'=> $id));
+                if ($result)
+                    $playersIds[$player] = $result[0]['username'];
+            }
+            return $playersIds;
+        }
+
+
+        //--------------Setters and Modifiying game functions ------
+        /***
+         *  A user tries to join a game
+         */
+        function join($user_id, $game_id)
+        {
+            $joined =  $this->isPlaying($user_id, $game_id);
+            
+            if ($joined)
+                return True;
+            else 
+            {  
+                $possible_players = array('player2', 'player3', 'player4');
+                $where            = array( 'id' => $game_id );
+
+                //Checking for available spots 
+                //available spots are NULL values in the game table
+                foreach ($possible_players as $index => $player)
+                {
+                    $set   = array($player => $user_id);
+                    $nulls = array($player);
+    
+                    if ($this->db->updateIfNull('game', $set, $where, $nulls))
+                        return True;
+                }
+            }
+            return False;
+        }
+        /**
+         * A user creates a game. Returns the id of the created game.
+         */
+        function create($user_id)
+        {
+            $values = array(
+                'player1' => $user_id,
+                'player2' => null,
+                'player3' => null,
+                'player4' => null,
+                'time_start' => time(),
+                'time_end'   => null,
+                'finished'   => 0
+            );
+            return $this->db->insert('game', $values);
+        }
+        /*
+        *   Adds a hand score to game_id
+        */
+        function addHand($user_id, $game_id, $player1_score, $player2_score, $player3_score, $player4_score)
+        {
+            $hand_added = 0;
+
+            if ( $this->isPlaying($user_id, $game_id) &&
+                !$this->isPlaying(null    , $game_id) && //All players are playing
+                !$this->isGameFinished($game_id))
+            {
+                
+                $total_score = array_sum(array($player1_score, 
+                                                $player2_score, 
+                                                $player3_score, 
+                                                $player4_score));
+                
+                //The possible total scores are 26 or 26 * 3
+                if ( ($total_score !=  26 ) && ($total_score != (26 * 3)) )
+                    return $hand_added;
+                //At least a player must have 13 points or more
+                
+                if (($player1_score < 13) &&
+                    ($player2_score < 13) &&
+                    ($player3_score < 13) &&
+                    ($player4_score < 13)   )
+                    {
+                       
+                        return $hand_added;
+                    }
+                        
+                
+                $values = array(
+                    'game_id'       => $game_id,
+                    'player1_score' => $player1_score,
+                    'player2_score' => $player2_score,
+                    'player3_score' => $player3_score,
+                    'player4_score' => $player4_score,
+                    'time'          => time()
+                );
+                return $this->db->insert('hand', $values);
+            }
+            return $hand_added;
+        }
+
+        /*
+        *   Deletes a hand from a game if the user is playing the game
+        */
+        function deleteHand($user_id, $game_id, $hand_id)
+        {
+            if ($this->isPlaying($user_id, $game_id) &&
+                !$this->isGameFinished($game_id))
+            {
+                $where = array( 'id' => $hand_id );
+                return $this->db->delete('hand', $where);
+            }
+            return False;
+        }
         /**
          * finis a game and stores the stats:
          *  wins, losses, plays, shots, cheats
          */
         function finish($user_id, $game_id)
         {
-            if ($this->isPlaying($user_id, $game_id))
+            if ( $this->isPlaying($user_id, $game_id) &&
+                !$this->isGameFinished($game_id))
             {
-                $players = $this->playersIds($game_id);
+
+                $this->_clear_game_stats($game_id);
+
+                $players = $this->getPlayersIds($game_id);
                 $scores  = $this->db->select('hand',
                                             array('sum(player1_score) as player1_score',
                                                   'sum(player2_score) as player2_score',
@@ -130,9 +316,6 @@ class Game
                         $this->_insert_stat('plays', $game_id, $row['id']);
                     }
                     
-                    $set   = array('time_end' => time()   );
-                    $where = array('id'       => $game_id );
-                    $this->db->update('game', $set, $where);
                 }
                 
                 $hands   = $this->db->select('hand',
@@ -192,7 +375,16 @@ class Game
                         }
                             
                     }
-
+                    /**
+                     * finish game
+                     */
+                    if ($scores)
+                    {
+                        $set   = array('time_end' => time(),
+                                        'finished' => 1   );
+                        $where = array('id'       => $game_id);
+                        $this->db->update('game', $set, $where);
+                    }
                     
                    
                 }
@@ -200,130 +392,6 @@ class Game
             }
             return False;
         }
-
-        /**
-         * associative arrays of players ids playing game_id
-         */
-        function playersIds($game_id)
-        {
-            $players = array('player1' => null,
-                             'player2' => null,
-                             'player3' => null,
-                             'player4' => null);
-
-            $where   = array( 'id' => $game_id );
-            $rows    = $this->db->select('game', array('*'), $where);
-            if ($rows)
-            {
-                return array_intersect_key($rows[0], $players);
-            }
-            return $players;
-        }
-        
-
-        /**
-         * associative array of players names
-         */
-        function playersUsername($game_id)
-        {
-            $playersIds = $this->playersIds($game_id);
-            foreach ($playersIds as $player => $id)
-            {
-                $result = $this->db->select('player', array('username'), array('id'=> $id));
-                if ($result)
-                    $playersIds[$player] = $result[0]['username'];
-            }
-            return $playersIds;
-        }
-
-        /**
-         * 
-         */
-        function isPlaying($user_id, $game_id)
-        {
-            $players = $this->playersIds($game_id);
-            foreach($players as $pp => $player_id)
-            {
-                if ($player_id == $user_id)
-                    return True;
-            }
-            return False;
-        }
-
-        /***
-         *  A user tries to join a game
-         */
-        function join($user_id, $game_id)
-        {
-            $joined = $this->isPlaying($user_id, $game_id);
-            
-            if ($joined)
-                return True;
-            else 
-            {  
-                $possible_players = array('player2', 'player3', 'player4');
-                $where            = array( 'id' => $game_id );
-
-                //Checking for available spots 
-                //available spots are NULL values in the game table
-                foreach ($possible_players as $index => $player)
-                {
-                    $set   = array($player => $user_id);
-                    $nulls = array($player);
-    
-                    if ($this->db->updateIfNull('game', $set, $where, $nulls))
-                        return True;
-                }
-            }
-            return False;
-        }
-
-        /*
-        *   Adds a hand score to game_id
-        */
-        function addHand($user_id, $game_id, $player1_score, $player2_score, $player3_score, $player4_score)
-        {
-            $hand_added = 0;
-
-            if ( $this->isPlaying($user_id, $game_id) &&
-                !$this->isPlaying(null    , $game_id))
-            {
-                
-                $total_score = array_sum(array($player1_score, 
-                                                $player2_score, 
-                                                $player3_score, 
-                                                $player4_score));
-                
-                //The possible total scores are 26 or 26 * 3
-                if ( ($total_score !=  26 ) && ($total_score != (26 * 3)) )
-                    return $hand_added;
-
-                $values = array(
-                    'game_id'       => $game_id,
-                    'player1_score' => $player1_score,
-                    'player2_score' => $player2_score,
-                    'player3_score' => $player3_score,
-                    'player4_score' => $player4_score,
-                    'time'          => time()
-                );
-                return $this->db->insert('hand', $values);
-            }
-            return $hand_added;
-        }
-
-        /*
-        *   Deletes a hand from a game if the user is playing the game
-        */
-        function deleteHand($user_id, $game_id, $hand_id)
-        {
-            if ($this->isPlaying($user_id, $game_id))
-            {
-                $where = array( 'id' => $hand_id );
-                return $this->db->delete('hand', $where);
-            }
-            return False;
-        }
-       
          
 }
 

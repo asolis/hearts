@@ -126,7 +126,7 @@ else if ( !empty($_GET['action']) && $_GET['action'] == 'game')
     
     $usernames = array_map(function($user){
         return ($user == null) ? '...' : $user;
-    },$game->playersUsername($_GET['game_id']));
+    },$game->getPlayersUsernames($_GET['game_id']));
 
     $game = array(
         'game_id' => $_GET['game_id'],
@@ -264,7 +264,10 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'join')
         $_SESSION['CURRENT_GAME'] = $_POST['game_id'];
     
     $output['return'] = $joined;
-    $output['data'] = $_SESSION['CURRENT_GAME'];
+    $output['data']   = $_SESSION['CURRENT_GAME'];
+    //send message 
+    //Game is full (4 ppl already playing)
+    //Game doesn't exist 
     print json_encode($output);
 }
 /**
@@ -326,12 +329,18 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'last_hand')
     }
     print json_encode($output);
 }
-
+/**
+ * requires
+ *  action
+ *  game_id
+ */
 else if (!empty($_POST['action']) && $_POST['action'] == 'controls')
 {
-    $players  = $game->playersUsername($_SESSION['CURRENT_GAME']);
+    $players  = $game->getPlayersUsernames($_SESSION['CURRENT_GAME']);
     $complete = True;
-
+    
+    $finished  = boolval($game->isGameFinished($_POST['game_id']));
+    
     $result  = array_map(function($number, $label, $username) use (&$complete) {
         $complete = $complete && ($username != null);
         $username = ($username == null)? '...' : $username;
@@ -340,7 +349,8 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'controls')
 
     $output['return'] = $complete;
     $output['data']   = $result;
-    
+    $output['finished'] = $finished; //new value
     print json_encode($output);
 }
+
 ?>

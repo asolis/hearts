@@ -69,9 +69,8 @@
     color:rgb(207, 218, 236);
 }
 footer, .navbar.bg-dark , .bg-dark { 
-    background-color:rgba(0, 0, 0, 0.705) !important;
+    background-color:#212529 !important;
 }
-
 
 .nb-card .col-form-label, .control-label{
     color:rgb(207, 218, 236);
@@ -89,6 +88,7 @@ footer, .navbar.bg-dark , .bg-dark {
 
 #navbarToggleExternalContent {
     margin-top: 58px;
+    background-color:rgb(61, 61, 61);
 }
 #container {
     margin-top: 80px;

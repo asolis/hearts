@@ -294,14 +294,17 @@ function showHome(container)
 }
 
 
-function showGameControls(container)
+function showGameControls(container, game_id)
 {
     function addHand(obj)
     {
             obj.event.preventDefault();
             var selects   = $(sprintf('$s form',container)).serializeArray();
+
+            $(sprintf("$s form select",container)).removeClass('is-invalid');
             
             $.post(controller,selects, function(json){
+                
                 if (json.return)
                     location.reload();
                 $(sprintf("$s form select",container)).addClass('is-invalid');
@@ -313,11 +316,17 @@ function showGameControls(container)
             var options = {
                 "action":"finish"
             };
+           
             if (confirm('Would you like to finish this game?'))
             {
+                
                 $.post(controller,options, function(json){
-                    if (json.return)
-                        locaction.reload();
+                   
+                    if (json.return){
+                        
+                        location.reload();
+                    }
+                        
                 },'json');
             }  
     };
@@ -326,13 +335,16 @@ function showGameControls(container)
             var options = {
                 "action":"last_hand"
             };
+            
             if (confirm('Would you like to remove the last played hand?'))
             {
                 $.post(controller,options, function(json){
                     
-                    if (json.return)
+                    if (json.return){
+                       
                         location.reload();
-                });
+                    }
+                },'json');
             }
             
     }
@@ -365,7 +377,7 @@ function showGameControls(container)
                     ]}
                 ]},
                 {"<>":"div","class":"container mt-3 mb-3","html":[
-                    {"<>":"button","class":"btn ","data-toggle":"collapse","href":"#control_view","html":"Game Controls"},
+                    {"<>":"button","class":"btn btn-light","data-toggle":"collapse","href":"#control_view","html":"Game Controls"},
                     {"<>":"button","class":"btn btn-success float-right","html":"Finish Game","onclick":finishGame}
                   ]}
               ]},
@@ -380,12 +392,19 @@ function showGameControls(container)
              'options':  {"<>":"option","html":"$d", "value":"$d"}
      };
      var options = {
-         'action':"controls"
+         'action':"controls",
+         'game_id':  game_id
      };
+     
      $.post(controller, options, function(json){
         
         if (json.return)
             $(container).json2html(json,transforms.control);
+        if (json.finished)
+        {
+            $(sprintf('$s button',container)).prop('disabled',true).removeClass('btn-success').removeClass('btn-light');
+        }
+            
     },'json');
      
 }

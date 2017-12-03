@@ -92,7 +92,7 @@ if (empty($_SESSION["authenticated"]))
                 <script src="vendor/json2html-sprintf/json2html.js"></script>
                 <script src="vendor/json2html-sprintf/jquery.json2html.js"></script>
                 <script src="vendor/jQuery-MD5/jquery.md5.js"></script>
-                <script src="js/display.js?asasaaddasdasddassaasss"></script>	
+                <script src="js/display.js?asasasasdfasdasd"></script>	
                 <script>
                     $(function() {
                         $('#update_profile').click(function(){
@@ -118,7 +118,8 @@ if (empty($_SESSION["authenticated"]))
                         else
                         {
                             showGame('#container',CURRENT_GAME);
-                            showGameControls('#controls');
+                            showGameControls('#controls',CURRENT_GAME);
+
                         }
 
                     });
