@@ -68,10 +68,10 @@
 .nb-card a{
     color:rgb(207, 218, 236);
 }
-
-.navbar.bg-dark , .bg-dark{
-    background-color:rgba(21, 25, 29, 0.514) !important;
+footer, .navbar.bg-dark , .bg-dark { 
+    background-color:rgba(0, 0, 0, 0.705) !important;
 }
+
 
 .nb-card .col-form-label, .control-label{
     color:rgb(207, 218, 236);
@@ -85,4 +85,11 @@
 .row.no-gutters>.col {
     padding-right: 2.5px;
       padding-left: 2.5px;
+}
+
+#navbarToggleExternalContent {
+    margin-top: 58px;
+}
+#container {
+    margin-top: 80px;
 }

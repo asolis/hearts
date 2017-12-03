@@ -37,26 +37,31 @@ if (empty($_SESSION["authenticated"]))
 		<!--
 		CSS
         ============================================= -->
-        <link rel="stylesheet" href="css/background.css?asdf">
+        <link rel="stylesheet" href="css/background.css?asdasdff">
         <link rel="stylesheet" href="vendor/bootstrap-4/css/bootstrap.min.css">
         <link rel="stylesheet" href="vendor/font-awesome-4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="css/card.css?a">
-
+        <link rel="stylesheet" href="css/card.css">
+        <style>
+                
+               
+               
+        </style>
 	</head>
 	<body>
-            <nav class="navbar navbar-dark bg-dark">
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <nav class="navbar fixed-top navbar-dark bg-dark">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" >
                         <span class="navbar-toggler-icon"></span>
-                        <span class="navbar-toggler-text">
-                                <?php print sprintf('%s <small>(%s %s)</small>', 
+                        <a class="navbar-brand" href="#">
+                            <?php 
+                                            print sprintf('%s <small>(%s %s)</small>', 
                                                                   $_SESSION['username'],
                                                                   $_SESSION['first_name'], 
-                                                                  $_SESSION['last_name']);?>
-                        </span>
-                       
+                                                                  $_SESSION['last_name']);
+                            ?>
+                        </a>
                     </button>
             </nav>
-            <div class="collapse" id="navbarToggleExternalContent">
+            <div class="collapse fixed-top" id="navbarToggleExternalContent">
                     <div class="bg-dark p-3">
                             <ul class="navbar-nav mr-auto">
                                     <li class="nav-item">
@@ -73,7 +78,8 @@ if (empty($_SESSION["authenticated"]))
             </div>
             
             <div id="container"></div>
-            <br>
+           
+
             <div id="controls"></div>
 
 
@@ -86,7 +92,7 @@ if (empty($_SESSION["authenticated"]))
                 <script src="vendor/json2html-sprintf/json2html.js"></script>
                 <script src="vendor/json2html-sprintf/jquery.json2html.js"></script>
                 <script src="vendor/jQuery-MD5/jquery.md5.js"></script>
-                <script src="js/display.js?asasaadddassaasss"></script>	
+                <script src="js/display.js?asasaaddasdasddassaasss"></script>	
                 <script>
                     $(function() {
                         $('#update_profile').click(function(){

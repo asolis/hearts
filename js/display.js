@@ -337,38 +337,38 @@ function showGameControls(container)
             
     }
 
+
+    
+
      var transforms = {
-             'control':{"<>":"div", "class":"container", "html":[
-                        {"<>":"div","class":"card","html":[
-                             {"<>":"div","class":"card-body","html":[
-                                     {"<>":"form","html":[
-                                             {"<>":"div","class":"row no-gutters","html":function(obj){
-                                                     return $.json2html(obj.data, transforms.cols);
-                                             }},
-                                             {"<>":"div","class":"form-group row","html":[
-                                             {"<>":"div","class":"col-sm-12","html":[
-                                                     {"<>":"button","type":"submit","class":"btn btn-primary btn-block btn-large","html":"Add Hand","onclick":addHand}
-                                                     ]}
-                                             ]},
-                                             {"<>":"div","class":"form-group row","html":[
-                                                     {"<>":"input","type":"hidden","name":"action","value":"add_hand","class":"form-control"}
-                                             ]}
-                                     ]},
-                                     {"<>":"br","html":""},
-                                     {"<>":"div","class":"form-group row","html":[
-                                     {"<>":"div","class":"col-sm-12","html":[
-                                             {"<>":"button","class":"btn btn-danger btn-block btn-large","html":"Remove Last Hand","onclick":lastHand}
-                                             ]}
-                                     ]},
-                                     {"<>":"br","html":""},
-                                     {"<>":"div","class":"form-group row","html":[
-                                     {"<>":"div","class":"col-sm-12","html":[
-                                             {"<>":"button","class":"btn btn-success btn-block btn-large","html":"Finish Game","onclick":finishGame}
-                                             ]}
-                                     ]}
-                             ]}
-                     ]}
+             'control':{"<>":"footer","class":"fixed-bottom","html":[
+                {"<>":"div","id":"control_view","class":"collapse","html":[
+                    {"<>":"div", "class":"container", "html":[
+                        {"<>":"form","html":[
+                                {"<>":"div","class":"row no-gutters","html":function(obj){
+                                        return $.json2html(obj.data, transforms.cols);
+                                }},
+                                {"<>":"div","class":"form-group row","html":[
+                                {"<>":"div","class":"col-sm-12","html":[
+                                        {"<>":"button","type":"submit","class":"btn btn-primary btn-block btn-large","html":"Add Hand","onclick":addHand}
+                                        ]}
+                                ]},
+                                {"<>":"div","class":"form-group row","html":[
+                                        {"<>":"input","type":"hidden","name":"action","value":"add_hand","class":"form-control"}
+                                ]}
+                        ]},
+                        {"<>":"div","class":"form-group row","html":[
+                        {"<>":"div","class":"col-sm-12","html":[
+                                {"<>":"button","class":"btn btn-danger btn-block btn-large","html":"Remove Last Hand","onclick":lastHand}
+                                ]}
+                        ]}
+                    ]}
                 ]},
+                {"<>":"div","class":"container mt-3 mb-3","html":[
+                    {"<>":"button","class":"btn ","data-toggle":"collapse","href":"#control_view","html":"Game Controls"},
+                    {"<>":"button","class":"btn btn-success float-right","html":"Finish Game","onclick":finishGame}
+                  ]}
+              ]},
              'cols' : {"<>":"div","class":"col","html":[
                      {"<>":"div","class":"form-group text-center","html":[
                              {"<>":"label","class":"control-label","html":"${username}"},
