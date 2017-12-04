@@ -129,7 +129,7 @@ function showRankings(container, stats_column)
         "action": "stats",
         "column": stats_column
     };
-
+    
     $.getJSON(controller, options, function(data){
         
         var transforms = {
@@ -145,19 +145,19 @@ function showRankings(container, stats_column)
                                     {"<>":"th","html":"Rank"},
                                     {"<>":"th","html":"Player"},
                                     {"<>":"th", "onclick":function(e){ 
-                                        (container, 'wins');
+                                        showRankings(container, 'wins');
                                     }, "children":[{"<>":"a", "href":"#","html":"W"}]},
                                     {"<>":"th", "onclick":function(e){ 
-                                        (container, 'losses');
+                                        showRankings(container, 'losses');
                                     }, "children":[{"<>":"a", "href":"#","html":"L"}]},
                                     {"<>":"th", "onclick":function(e){ 
-                                        (container, 'plays');
+                                        showRankings(container, 'plays');
                                     }, "children":[{"<>":"a", "href":"#","html":"P"}]},
                                     {"<>":"th", "onclick":function(e){
-                                        (container, 'shots');
+                                        showRankings(container, 'shots');
                                     }, "children":[{"<>":"a", "href":"#","html":"S"}]},
                                     {"<>":"th", "onclick":function(e){ 
-                                        (container, 'cheats');
+                                        showRankings(container, 'cheats');
                                     }, "children":[{"<>":"a", "href":"#","html":"C"}]}
                                   ]}
                               ]},
