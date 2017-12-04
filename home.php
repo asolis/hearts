@@ -12,7 +12,8 @@ ini_set('display_errors', '1');
 session_start();
 if (empty($_SESSION["authenticated"]))
     header("Location: index.php");
-
+if ($_SESSION['admin'])
+    header("Location: admin.php");
 ?>
 
 <!DOCTYPE html>
@@ -64,7 +65,9 @@ if (empty($_SESSION["authenticated"]))
             <div class="collapse fixed-top" id="navbarToggleExternalContent">
                     <div class="bg-dark p-3">
                             <ul class="navbar-nav mr-auto">
-                                    
+                                    <li class="nav-item">
+                                            <a class="nav-link" href="home.php">Home</a>
+                                    </li>
                                     <li class="nav-item">
                                             <a class="nav-link" href="game.html">Watch Game</a>
                                     </li>
@@ -97,15 +100,17 @@ if (empty($_SESSION["authenticated"]))
                 <script src="vendor/json2html-sprintf/json2html.js"></script>
                 <script src="vendor/json2html-sprintf/jquery.json2html.js"></script>
                 <script src="vendor/jQuery-MD5/jquery.md5.js"></script>
-                <script src="js/display.js?asdfasdfasdf"></script>	
+                <script src="js/display.js?asdfhasdfasdf"></script>	
                 <script>
                     $(function() {
                         $('#update_profile').click(function(){
                             showProfile('#container');
+                            $('#controls').html('');
                             $('#navbarToggleExternalContent').collapse('hide');
                         });
                         $('#rankings').click(function(){
                             showRankings('#container', "wins");
+                            $('#controls').html('');
                             $('#navbarToggleExternalContent').collapse('hide');
                         })
                         $('#logout').click(function(){

@@ -136,9 +136,6 @@ function showRankings(container, stats_column)
             "card"  :{"<>":"div","class":"container mt-5","html":[
                 {"<>":"div","class":"card tex ","html":[
                     {"<>":"div","class":"card-header ","html":[
-                        {"<>":"span", "class":"float-right fa fa-refresh", "aria-hidden":"true", "onclick":function(e){
-                            (container, options);
-                        }},
                         {"<>":"h5","html":sprintf("Rankings  <small>| $s</small> ", options.column)}
                     ]},
                     {"<>":"div","class":"card-body text-center card-body-no-padding","html":[
@@ -202,7 +199,6 @@ function showGame(container, game_id)
             "card":{"<>":"div","class":"container mt-3","html":[
                 {"<>":"div","class":"card tex ","html":[
                     {"<>":"div","class":"card-header ","children":[
-                        {"<>":"span", "class":"float-right fa fa-refresh", "aria-hidden":"true", "onclick":function(e){ showGame(container, options);}},
                         {"<>":"div","html":"Game Code: ${game_id}"}
                     ]},
                     {"<>":"div","class":"card-body text-center card-body-no-padding","html":[

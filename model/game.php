@@ -8,7 +8,7 @@ __version__   = "1.0"
 */
 
 require_once('db_connection.php');
-
+require_once('player.php');
 class Game 
 {
         private $db     = null;
@@ -397,7 +397,16 @@ class Game
             }
             return False;
         }
-         
+        function unlockGame($user_id, $game_id)
+        {
+            $player = new Player($this->db);
+            $admin = $player->isAdmin($user_id);
+            if ($admin)
+            {
+                $this->db->update('game', array('finished'=> 0), array('id'=>$game_id));
+            }
+            return $admin;
+        }
 }
 
  

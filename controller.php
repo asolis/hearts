@@ -9,7 +9,6 @@ __version__   = "1.0"
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 require_once('model/db_connection.php');
-require_once('model/player.php');
 require_once('model/game.php');
 
 session_start();
@@ -365,5 +364,45 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'controls')
     $output['finished'] = $finished; //new value
     print json_encode($output);
 }
+
+//ADMINISTRATION TASKS
+
+/**
+ * requires
+ *  action
+ */
+else if (!empty($_POST['action']) && $_POST['action'] == 'list_users')
+{
+    $output['data'] = $player->listUsers();
+    
+    print json_encode($output);
+}
+
+
+/**
+ * requires
+ *  action
+ *  user_id
+ *  password
+ */
+else if (!empty($_POST['action']) && $_POST['action'] == 'reset_password')
+{
+    $output['return'] = boolval($player->resetPassword($_SESSION['id'], $_POST['user_id'], $_POST['password']));
+
+    print json_encode($output);
+}
+
+/**
+ * requires
+ *  action
+ *  game_id
+ */
+else if (!empty($_POST['action']) && $_POST['action'] == 'unlock_game')
+{
+    $output['return'] = boolval($game->unlockGame($_SESSION['id'], $_POST['game_id']));
+    
+    print json_encode($output);
+}
+
 
 ?>
