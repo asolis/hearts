@@ -38,10 +38,10 @@ if ($_SESSION['admin'])
 		<!--
 		CSS
         ============================================= -->
-        <link rel="stylesheet" href="css/background.css?asdasdff">
+        <link rel="stylesheet" href="css/background.css">
         <link rel="stylesheet" href="vendor/bootstrap-4/css/bootstrap.min.css">
         <link rel="stylesheet" href="vendor/font-awesome-4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="css/card.css?asdfasdf">
+        <link rel="stylesheet" href="css/card.css">
         <style>
                 
                
@@ -100,7 +100,7 @@ if ($_SESSION['admin'])
                 <script src="vendor/json2html-sprintf/json2html.js"></script>
                 <script src="vendor/json2html-sprintf/jquery.json2html.js"></script>
                 <script src="vendor/jQuery-MD5/jquery.md5.js"></script>
-                <script src="js/display.js?asdfhasdfasdf"></script>	
+                <script src="js/display.js"></script>	
                 <script>
                     $(function() {
                         $('#update_profile').click(function(){

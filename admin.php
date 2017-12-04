@@ -36,7 +36,7 @@ if (empty($_SESSION["authenticated"]) or !$_SESSION['admin'])
 		<!--
 		CSS
         ============================================= -->
-        <link rel="stylesheet" href="css/background.css?asdf">
+        <link rel="stylesheet" href="css/background.css">
         <link rel="stylesheet" href="vendor/bootstrap-4/css/bootstrap.min.css">
         <link rel="stylesheet" href="vendor/font-awesome-4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="css/card.css">
@@ -110,7 +110,7 @@ if (empty($_SESSION["authenticated"]) or !$_SESSION['admin'])
                 <script src="vendor/json2html-sprintf/json2html.js"></script>
                 <script src="vendor/json2html-sprintf/jquery.json2html.js"></script>
                 <script src="vendor/jQuery-MD5/jquery.md5.js"></script>
-                <script src="js/display.js?as"></script>	
+                <script src="js/display.js"></script>	
                 <script>
                         $(function() {
                         

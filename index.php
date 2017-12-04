@@ -36,7 +36,7 @@ if (!empty($_SESSION["authenticated"]))
 		<!--
 		CSS   
 		============================================= -->
-		<link rel="stylesheet" href="css/background.css?asdf">
+		<link rel="stylesheet" href="css/background.css">
 		<link rel="stylesheet" href="vendor/bootstrap-4/css/bootstrap.min.css">
         <link rel="stylesheet" href="vendor/font-awesome-4.7.0/css/font-awesome.min.css">
 		<link rel="stylesheet" href="css/card.css">
