@@ -93,6 +93,11 @@ class Game
 
         }
         
+        function isValidGameCode($game_id)
+        {
+            return $this->db->select('game', array('*'), array('id'=> $game_id));
+        }
+
         /**
          * 
          */

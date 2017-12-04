@@ -30,7 +30,7 @@ if (!empty($_SESSION["authenticated"]))
 	<!-- meta character set -->
 	<meta charset="UTF-8">
 	<!-- Site Title -->
-	<title>Microsoft Hearts</title>
+	<title>Hearts</title>
 
 	
 		<!--

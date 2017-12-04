@@ -259,12 +259,25 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'finish')
  */
 else if (!empty($_POST['action']) && $_POST['action'] == 'join')
 {
-    $joined = $game->join($_SESSION['id'], $_POST['game_id']);
-    if ($joined)
-        $_SESSION['CURRENT_GAME'] = $_POST['game_id'];
+    $valid = $game->isValidGameCode($_POST['game_id']);
+    if (!$valid)
+    {
+        $output['message'] = 'Not a valid game';
+        $output['return'] = False;
+    }
+    if ($valid)
+    {
+        $joined = $game->join($_SESSION['id'], $_POST['game_id']);
+        if ($joined)
+            $_SESSION['CURRENT_GAME'] = $_POST['game_id'];
+        else
+             $output['message'] = 'Game is full';
+        
+        $output['return'] = $joined;
+        $output['data']   = $_SESSION['CURRENT_GAME'];
+    }
     
-    $output['return'] = $joined;
-    $output['data']   = $_SESSION['CURRENT_GAME'];
+    
     //send message 
     //Game is full (4 ppl already playing)
     //Game doesn't exist 
@@ -339,10 +352,10 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'controls')
     $players  = $game->getPlayersUsernames($_SESSION['CURRENT_GAME']);
     $complete = True;
     
-    $finished  = boolval($game->isGameFinished($_POST['game_id']));
+    $finished  = boolval($game->isGameFinished($_POST['game_id']) || 
+                         $game->isPlaying(null, $_POST['game_id']));
     
-    $result  = array_map(function($number, $label, $username) use (&$complete) {
-        $complete = $complete && ($username != null);
+    $result  = array_map(function($number, $label, $username)  {
         $username = ($username == null)? '...' : $username;
         return ['label'=> sprintf('%s_score',$label), 'username'=>$username, 'number' => $number]; 
     },[1,2,3,4], array_keys($players),$players);

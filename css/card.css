@@ -97,3 +97,8 @@ footer, .navbar.bg-dark , .bg-dark {
 #container {
     margin-top: 80px;
 }
+.invalid-feedback-wa {
+    margin-top: .25rem;
+    font-size: .875rem;
+    color: #dc3545
+}

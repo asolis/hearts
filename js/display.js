@@ -270,9 +270,18 @@ function showHome(container)
             'action': 'join',
             'game_id': $('#join_game_id').val()
         };
-        $.post(controller, options, function(data){
-            if (data.return)
+        $.post(controller, options, function(json){
+            console.log(json);
+            if (json.return)
                 location.reload();
+            else
+            {
+                var a = 3;
+                console.log(sprintf('div.invalid-feedback-wa', container));
+                $('#join_game_id').addClass('is-invalid');
+                $('div.invalid-feedback-wa').html(json.message);
+            }
+            
         },'json');
     }
     var transform = {"<>":"div","class":"container","html":[
@@ -283,9 +292,10 @@ function showHome(container)
                 {"<>":"div","class":"input-group","html":[
                     {"<>":"input","id":"join_game_id","type":"text","pattern":"\\d*", "class":"form-control","placeholder":"Game Code"},
                     {"<>":"span","class":"input-group-btn","html":[
-                        {"<>":"button","class":"btn btn-primary","type":"button","html":"Join Game","onclick":joinGame}
+                        {"<>":"button","class":"btn btn-primary form-control","type":"button","html":"Join Game","onclick":joinGame}
                       ]}
-                  ]}
+                  ]},
+                  {'<>':"div",  "class":"invalid-feedback-wa"}
               ]}
           ]}
       ]};
@@ -397,7 +407,7 @@ function showGameControls(container, game_id)
      };
      
      $.post(controller, options, function(json){
-        
+        console.log(json);
         if (json.return)
             $(container).json2html(json,transforms.control);
         if (json.finished)

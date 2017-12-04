@@ -31,7 +31,7 @@ if (empty($_SESSION["authenticated"]))
 	<!-- meta character set -->
 	<meta charset="UTF-8">
 	<!-- Site Title -->
-	<title>Microsoft Hearts</title>
+	<title>Hearts</title>
 
 	
 		<!--
@@ -40,7 +40,7 @@ if (empty($_SESSION["authenticated"]))
         <link rel="stylesheet" href="css/background.css?asdasdff">
         <link rel="stylesheet" href="vendor/bootstrap-4/css/bootstrap.min.css">
         <link rel="stylesheet" href="vendor/font-awesome-4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="css/card.css">
+        <link rel="stylesheet" href="css/card.css?asdfasdf">
         <style>
                 
                
@@ -97,7 +97,7 @@ if (empty($_SESSION["authenticated"]))
                 <script src="vendor/json2html-sprintf/json2html.js"></script>
                 <script src="vendor/json2html-sprintf/jquery.json2html.js"></script>
                 <script src="vendor/jQuery-MD5/jquery.md5.js"></script>
-                <script src="js/display.js"></script>	
+                <script src="js/display.js?asdfasdfasdf"></script>	
                 <script>
                     $(function() {
                         $('#update_profile').click(function(){
