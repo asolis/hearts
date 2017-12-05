@@ -127,6 +127,7 @@ else if ( !empty($_GET['action']) && $_GET['action'] == 'game')
         return ($user == null) ? '...' : $user;
     },$game->getPlayersUsernames($_GET['game_id']));
 
+
     $game = array(
         'game_id' => $_GET['game_id'],
         'hands'   => $hands,

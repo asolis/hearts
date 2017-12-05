@@ -185,7 +185,7 @@ function showRankings(container, stats_column)
 }
 
 
-function showGame(container, game_id)
+function showGame(container, game_id, playing)
 {
     var options    = {
         "action": "game",
@@ -199,7 +199,28 @@ function showGame(container, game_id)
             "card":{"<>":"div","class":"container mt-3","html":[
                 {"<>":"div","class":"card tex ","html":[
                     {"<>":"div","class":"card-header ","children":[
+                        {"<>":"div","class":"float-right", "html":function(obj){
+                            if (!playing)
+                                return '';
+                                
+                            switch (obj.hands.length % 4)
+                            {
+                                case 3:
+                                    return $.json2html([1], transforms.nopass);
+                                    break;
+                                case 2:
+                                    return $.json2html([1], transforms.across);
+                                    break;
+                                case 1:
+                                    return $.json2html([1], transforms.right);
+                                    break;
+                                default:
+                                    return $.json2html([1],transforms.left);
+                            }
+                                
+                        }},
                         {"<>":"div","html":"Game Code: ${game_id}"}
+                        
                     ]},
                     {"<>":"div","class":"card-body text-center card-body-no-padding","html":[
                         {"<>":"table","class":"table table-sm table-bordered table-dark","html":[
@@ -227,6 +248,10 @@ function showGame(container, game_id)
                     ]}
                 ]}
             ]},
+            "left" :{"<>":"i", "class":"fa fa-arrow-left"},
+            "right":{"<>":"i", "class":"fa fa-arrow-right"},
+            "across":{"<>":"i", "class":"fa fa-arrow-up"},
+            "nopass":{"<>":"i", "class":"fa fa-question-cirle-o"},
             "scores": {"<>":"tr","html":[
                 {"<>":"td","html":"${index}"},
                 {"<>":"td","html":"${player1_score}"},

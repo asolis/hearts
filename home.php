@@ -100,6 +100,7 @@ if ($_SESSION['admin'])
                 <script src="vendor/json2html-sprintf/json2html.js"></script>
                 <script src="vendor/json2html-sprintf/jquery.json2html.js"></script>
                 <script src="vendor/jQuery-MD5/jquery.md5.js"></script>
+                <script src="vendor/confetti/jquery.confetti.js"></script>
                 <script src="js/display.js"></script>	
                 <script>
                     $(function() {
@@ -127,11 +128,12 @@ if ($_SESSION['admin'])
                         } 
                         else
                         {
-                            showGame('#container',CURRENT_GAME);
+                            showGame('#container',CURRENT_GAME, true);
                             showGameControls('#controls',CURRENT_GAME);
 
                         }
-
+                        
+                        
                     });
                 </script>
     </body>
