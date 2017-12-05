@@ -406,4 +406,20 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'unlock_game')
 }
 
 
+/**
+ * requires
+ *  action
+ */
+else if (!empty($_POST['action']) && $_POST['action'] == 'sync')
+{
+    if ($player->isAdmin($_SESSION['id']))
+    {
+        $output['message'] = shell_exec('./fetch.sh 2>&1');
+    }
+    else 
+        $output['return'] = False;
+    
+    print json_encode($output);
+}
+
 ?>
