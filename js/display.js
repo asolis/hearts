@@ -192,9 +192,9 @@ function showGame(container, game_id, playing)
         "game_id": game_id
     };
     
-
-    $.getJSON(controller, options, function(data){
-        
+    console.log('display');
+    $.getJSON(controller, options, function(json){
+        console.log(json);
         var transforms = {
             "card":{"<>":"div","class":"container mt-3","html":[
                 {"<>":"div","class":"card tex ","html":[
@@ -206,6 +206,7 @@ function showGame(container, game_id, playing)
                             switch (obj.hands.length % 4)
                             {
                                 case 3:
+                                   
                                     return $.json2html([1], transforms.nopass);
                                     break;
                                 case 2:
@@ -251,7 +252,7 @@ function showGame(container, game_id, playing)
             "left" :{"<>":"i", "class":"fa fa-arrow-left"},
             "right":{"<>":"i", "class":"fa fa-arrow-right"},
             "across":{"<>":"i", "class":"fa fa-arrow-up"},
-            "nopass":{"<>":"i", "class":"fa fa-question-cirle-o"},
+            "nopass":{"<>":"i", "class":"fa fa-question-circle-o"},
             "scores": {"<>":"tr","html":[
                 {"<>":"td","html":"${index}"},
                 {"<>":"td","html":"${player1_score}"},
@@ -267,8 +268,23 @@ function showGame(container, game_id, playing)
                 {"<>":"td","html":"${player4_score}"}
             ]}
         };
+        
+        
+
         $(container).html('');
-        $(container).json2html(data.data, transforms.card);
+        $(container).json2html(json.data, transforms.card);
+
+
+        if (playing && json.data.shot)
+        {
+            $('html').fireworks();
+            setTimeout(()=>{$('html').fireworks('destroy');}, 1500);
+            
+        }
+        if (playing && json.data.won)
+        {
+            $.confetti.interval(4000);
+        }
     });
 }
 
@@ -292,13 +308,11 @@ function showHome(container)
             'game_id': $('#join_game_id').val()
         };
         $.post(controller, options, function(json){
-            console.log(json);
+            
             if (json.return)
                 location.reload();
             else
             {
-                var a = 3;
-                console.log(sprintf('div.invalid-feedback-wa', container));
                 $('#join_game_id').addClass('is-invalid');
                 $('div.invalid-feedback-wa').html(json.message);
             }
@@ -428,7 +442,7 @@ function showGameControls(container, game_id)
      };
      
      $.post(controller, options, function(json){
-        console.log(json);
+        
         if (json.return)
             $(container).json2html(json,transforms.control);
         if (json.finished)

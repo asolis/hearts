@@ -117,22 +117,60 @@ else if ( !empty($_GET['action']) && $_GET['action'] == 'game')
                             return array_merge(array('index'=> $index + 1), $value);
                        }, array_keys($hands), $hands);
     
+    
+    $ids       = $game->getPlayersIds($_GET['game_id']);
+    $usernames = $game->getPlayersUsernames($_GET['game_id']);
+    
+    $usernames = array_map(function($user){
+        return ($user == null) ? '...' : $user;
+    },$usernames);
+
+
     foreach ($hands as $index => $hand)
         foreach($scores as $key => $value)
             $scores[$key] += $hand[$key];
 
-    $scores['index'] = 'T';
+    $shot = False;
+    $won  = False;
     
-    $usernames = array_map(function($user){
-        return ($user == null) ? '...' : $user;
-    },$game->getPlayersUsernames($_GET['game_id']));
+    if ($hands && !empty($_SESSION['id']))
+    {
+        
+        $playerLabel = array_search($_SESSION['id'], $ids);
+        
+        if ($playerLabel)
+        {
+            $lastHand = array_values(array_slice($hands, -1))[0];
 
+            $playerScore = $lastHand[sprintf('%s_score', $playerLabel)];
+            
+            $totalHandScore = 0;
+            foreach($scores as $key => $value)
+                $totalHandScore += $lastHand[$key];
+            //Check if current player is playing and he last hand was a shot   
+            if ($playerScore == 0 && $totalHandScore == (26 * 3))
+                $shot = True;
+
+            $maxValue = max($scores);
+            $minValue = min($scores);
+            //Check if current player is playing and he has won the game
+            //another player has higher than 99 points
+            if (($scores[sprintf('%s_score', $playerLabel)] == $minValue) &&
+                ($maxValue > 99))
+                $won = True;
+        }
+    }
+
+
+    $scores['index'] = 'T';
 
     $game = array(
         'game_id' => $_GET['game_id'],
         'hands'   => $hands,
         'players' => $usernames,
-        'scores'  => $scores
+        'scores'  => $scores,
+        'shot'    => $shot,
+        'won'     => $won
     );
     
     $output['data'] =  $game;

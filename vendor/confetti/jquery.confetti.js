@@ -195,26 +195,19 @@
         canvas.style.display = 'none';
     }
 
-    function RestartConfetti() {
-        ClearTimers();
-        StopConfetti();
-        reactivationTimerHandler = setTimeout(function () {
-            confettiActive = true;
-            animationComplete = false;
-            InitializeConfetti();
-        }, 100);
-    }
-    function intervalConfetti(time_interval) {
-        ClearTimers();
-        StopConfetti();
-        reactivationTimerHandler = setTimeout(function () {
-            confettiActive = true;
-            animationComplete = false;
-            InitializeConfetti();
-        }, 100);
-        setTimeout(function(){
-            StopConfetti();
-        }, time_interval);
+    // function RestartConfetti() {
+    //     ClearTimers();
+    //     StopConfetti();
+    //     reactivationTimerHandler = setTimeout(function () {
+    //         confettiActive = true;
+    //         animationComplete = false;
+    //         //InitializeConfetti();
+    //     }, 100);
+    // }
+    function interval(time)
+    {
+        InitializeConfetti();
+        setTimeout(()=>{DeactivateConfetti();},3500);
     }
 
     window.requestAnimFrame = (function () {
@@ -226,8 +219,8 @@
     this.init = init;
     this.start = InitializeConfetti;
     this.stop = DeactivateConfetti;
-    this.restart = RestartConfetti;
-    this.interval = intervalConfetti;
+    this.interval = interval;
+    // this.restart = RestartConfetti;
   }
   $.confetti.init();
 }(jQuery));

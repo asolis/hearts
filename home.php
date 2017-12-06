@@ -48,7 +48,7 @@ if ($_SESSION['admin'])
                
         </style>
 	</head>
-	<body>
+	<body class="fireworks">
             <nav class="navbar fixed-top navbar-dark bg-dark">
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" >
                         <span class="navbar-toggler-icon"></span>
@@ -100,8 +100,9 @@ if ($_SESSION['admin'])
                 <script src="vendor/json2html-sprintf/json2html.js"></script>
                 <script src="vendor/json2html-sprintf/jquery.json2html.js"></script>
                 <script src="vendor/jQuery-MD5/jquery.md5.js"></script>
-                <script src="vendor/confetti/jquery.confetti.js"></script>
-                <script src="js/display.js"></script>	
+                <script src="vendor/confetti/jquery.confetti.js?asdaasdfsdfasdffasdasdf"></script>
+                <script src="vendor/fireworks/jquery.fireworks.js"></script>
+                <script src="js/display.js?asdfasdasdfasdasasdfasddff"></script>	
                 <script>
                     $(function() {
                         $('#update_profile').click(function(){
