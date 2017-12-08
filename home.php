@@ -41,7 +41,7 @@ if ($_SESSION['admin'])
         <link rel="stylesheet" href="css/background.css">
         <link rel="stylesheet" href="vendor/bootstrap-4/css/bootstrap.min.css">
         <link rel="stylesheet" href="vendor/font-awesome-4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="css/card.css">
+        <link rel="stylesheet" href="css/card.css?v2">
         <style>
                 
                
