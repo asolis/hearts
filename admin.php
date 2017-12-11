@@ -89,6 +89,10 @@ if (empty($_SESSION["authenticated"]) or !$_SESSION['admin'])
                                         <button class="btn btn-primary" type="submit" id="unlock">Unlock</button>
                                         </span>
                                     </div>
+                                <br><br><br>
+                                    <div class="input-group mt-3">
+                                        <a id="sync">Sync</a>
+                                    </div>
                                 
                                 <br><br><br>
                                     <div class="input-group mt-3">
@@ -146,6 +150,16 @@ if (empty($_SESSION["authenticated"]) or !$_SESSION['admin'])
                                 
                             },'json');
                             
+                        });
+
+                        $('#sync').click(function(event){
+                            var options = {
+                                "action": "sync"
+                            };
+                            $.post(controller, options, function(json){
+                                if (json.return)
+                                    location.reload();
+                            });
                         });
                            
                         $('#logout').click(function(event){
