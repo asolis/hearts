@@ -78,7 +78,17 @@ class Game
                 $prev = $sub_arr;
             }
         }
+        /**
+         * helper function to delete an invite
+         */
+        function _delete_invite($user_id, $invited_id, $game_id)
+        {
+            $where = array('game_id' => $game_id,
+                            'user_id' => $user_id,
+                            'invited_id' => $invited_id);
 
+            return  $this->db->delete('invites', $where );
+        }
 
 
         //--------- Boolean status functions ---------------
@@ -215,6 +225,104 @@ class Game
             );
             return $this->db->insert('game', $values);
         }
+
+
+        function inviteToSwitch($user_id,$invited_id, $game_id )
+        {
+            if (!$this->isGameFinished($game_id) &&
+                 $this->isPlaying($user_id, $game_id))
+            {
+                $values = array('game_id'    => $game_id, 
+                             'user_id'    => $user_id,
+                             'invited_id' => $invited_id );
+                return $this->db->insert('invites', $values);
+            }
+            return False;
+        }
+        function isInvitedToJoin($invited_id,$game_id)
+        {
+            if ($this->isGameFinished($game_id))
+                return False;
+            return $this->db->select('invites',array('*'), array('game_id'   => $game_id,
+                                                      'invited_id'=> $invited_id));
+        }
+
+        function getOpenInvitations($invited_id)
+        {
+            $invitations = $this->db->select('invitations', array('*'), array(
+                'invited_id' => $invited_id
+            ));
+            foreach ($invitations as $idx => &$invitation)
+            {
+                $tmp = $this->db->select('player',array('*'), array('id' => $invitation['user_id']));
+                if ($tmp)
+                {
+                    $invitation['username']   = $tmp[0]['username'];
+                    $invitation['first_name'] = $tmp[0]['first_name'];
+                    $invitation['last_name']  = $tmp[0]['last_name'];
+                }
+                
+            }
+            return $invitations;
+
+        }
+
+
+        function declineSwitchInvite($user_id, $invited_id, $game_id)
+        {
+            $success = False;
+            $invitation = $this->isInvitedToJoin($invited_id, $game_id);
+            
+            if ($invitation)
+            {
+                if ($user_id == $invitation[0]['user_id'])
+                {
+                    $success = $this->_delete_invite($user_id, $invited_id, $game_id);
+                }
+                
+            }
+            return $success;
+
+        }
+
+        function acceptSwitchInvite($user_id, $invited_id, $game_id)
+        {
+            $success = False;
+            //only can accept invitation from open games
+            //check for invitaiton
+            $invitation = $this->isInvitedToJoin($invited_id, $game_id);
+
+            if ($invitation)
+            {
+                //if there is an invitation check who invited and update
+                $ids = $this->getPlayersIds($game_id);
+                foreach ($ids as $player => $id)
+                {
+                    //if the user that invitated is playing 
+                    //make the switch
+                    
+                    if ($id == $invitation[0]['user_id'] &&
+                        $id == $user_id)
+                    {
+                        $set   = array($player   => $invited_id);
+                        $where = array('id'      => $game_id );
+                                        
+                        
+                        $switched = $this->db->update('game', $set, $where);
+                        if ($switched)
+                        {
+                            $success = $this->_delete_invite($user_id, $invited_id, $game_id);
+                        }
+                        break;
+                    }
+                }
+                
+                
+            }
+            return $success;
+        }
+
+
         /*
         *   Adds a hand score to game_id
         */

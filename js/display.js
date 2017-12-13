@@ -89,7 +89,7 @@ function showProfile(container)
                         {"<>":"div","class":"form-group row","html":[
                             {"<>":"label","class":"col-sm-3 col-form-label","html":"Username"},
                             {"<>":"div","class":"col-sm-9","html":[
-                                {"<>":"input", "class":"form-control","type":"text","name":"username","value":"${username}", "required":"required"},
+                                {"<>":"input", "class":"form-control","type":"text","name":"username","value":"${username}", "autocapitalize": "none", "required":"required"},
                                 {"<>":"div", "class":"invalid-feedback", "html":""}
                               ]}
                           ]},
@@ -192,9 +192,9 @@ function showGame(container, game_id, playing)
         "game_id": game_id
     };
     
-    console.log('display');
+    
     $.getJSON(controller, options, function(json){
-        console.log(json);
+        
         var transforms = {
             "card":{"<>":"div","class":"container mt-3","html":[
                 {"<>":"div","class":"card tex ","html":[
@@ -319,7 +319,50 @@ function showHome(container)
             
         },'json');
     }
-    var transform = {"<>":"div","class":"container","html":[
+    function accept(event)
+    {
+       
+        var acceptOpts = {
+            "action": "accept",
+            "game_id": event.obj.game_id,
+            "user_id": event.obj.user_id
+        };
+        $.post(controller, acceptOpts, function(json){
+           
+            if (json.return)
+            {
+                location.reload();
+            }
+        },'json');
+        
+    }
+    function decline(event)
+    {
+       
+        var declineOpts = {
+            "action": "decline",
+            "game_id": event.obj.game_id,
+            "user_id": event.obj.user_id
+        };
+        $.post(controller, declineOpts, function(json){
+            
+            if (json.return)
+            {
+                location.reload();
+            }
+        },'json');
+    }
+    var invitations = [
+        {"<>":"div","class":"alert alert-primary","role":"alert","html":[
+            {"<>":"div","class":"m-1", "html":"${first_name} ${last_name} (${username}) invites you to take his place in Game ${game_id}"},
+            {"<>":"button","type":"button","class":"m-1 btn btn-primary","html":"Accept", "onclick":accept},
+            {"<>":"button","type":"button","class":"m-1 btn btn-secondary","html":"Decline", "onclick": decline
+        }
+          ]}
+    ];
+    var transform = [
+        {"<>":"div","class":"container invitations"},
+        {"<>":"div","class":"container","html":[
         {"<>":"div","class":"card m-2 ","html":[
             {"<>":"div","class":"card-body p-5 ","html":[
                 {"<>":"button","id":"login","class":"btn btn-primary btn-block btn-large","html":"New Game","onclick":newGame},
@@ -333,9 +376,66 @@ function showHome(container)
                   {'<>':"div",  "class":"invalid-feedback-wa"}
               ]}
           ]}
-      ]};
+      ]}];
       $(container).html('');
       $(container).json2html([1], transform);
+
+      var options = {
+          "action": "invitations"
+      };
+      
+      $.post(controller, options, function(json){
+          if (json.return)
+            $(sprintf('$s .invitations', container)).json2html(json.data, invitations);
+      },'json');
+}
+
+
+function showSwitchPlayer(container)
+{
+    
+    function switchWithPlayer(obj)
+    {
+       obj.event.preventDefault();
+       var inputs = $(sprintf("$s form",container)).serializeArray();
+       $.post(controller, inputs, function(json){
+                alert(json.message);
+                location.reload();
+       },'json');
+       
+        
+    }
+ 
+    var optionsTR = {"<>":"option", "value":"${id}", "html":"${first_name} ${last_name} (${username})"};
+
+    var transform = [
+        {"<>":"div","class":"container invitations"},
+        {"<>":"div","class":"container","html":[
+            {"<>":"div","class":"card m-2 ","html":[
+                {"<>":"div","class":"card-body p-5 ","html":[
+                    {"<>":"form","html":[
+                        {"<>":"div","class":"form-group","html":[
+                            {"<>":"select",  "class":"form-control", "name":"invited_id", "html":function(obj){
+                                return $.json2html(obj.data, optionsTR);
+                            }}
+                          ]},
+                        {"<>":"input","type":"hidden", "name":"action", "value":"switch"},
+                        {"<>":"button","type":"submit","class":"btn btn-primary float-right","html":"Switch With Player", "onclick":switchWithPlayer}
+                      ]}
+                ]}
+            ]}
+        ]}
+    ];
+   
+    var options    = {
+        'action': 'list_players'
+    };
+    $.post(controller, options, function(json){
+        $(container).html('');
+        $(container).json2html(json, transform);
+    },'json');
+
+    
 }
 
 

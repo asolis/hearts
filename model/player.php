@@ -69,7 +69,11 @@ class Player
 
         function listUsers()
         {
-            return $this->db->select('player', array('id','username'));
+            return $this->db->select('player', array('id','username', 'first_name', 'last_name'));
+        }
+        function listPlayers()
+        {
+            return $this->db->select('player', array('id','username', 'first_name', 'last_name'), array('admin' => 0));
         }
 
         function resetPassword($current_user_id, $user_id, $password)

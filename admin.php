@@ -124,7 +124,7 @@ if (empty($_SESSION["authenticated"]) or !$_SESSION['admin'])
                         };
                         $.post(controller, options, function(json){
                             
-                            var transform = {"<>":"option", "value":"${id}", "html":"${username}"};
+                            var transform = {"<>":"option", "value":"${id}", "html":"${first_name} ${last_name} (${username})"};
                             $('#users').json2html(json.data, transform);
                         },'json');
                             

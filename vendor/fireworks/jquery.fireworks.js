@@ -17,7 +17,7 @@ TODO:
 
             // Check this element isn't already inited
             if (jqe.data('fireworks_data') !== undefined) {
-                console.log('Looks like this element is already inited!');
+                //console.log('Looks like this element is already inited!');
                 return;
             }
 
@@ -56,7 +56,7 @@ TODO:
 
             // Check this element isn't already inited
             if (jqe.data('fireworks_data') === undefined) {
-                console.log('Looks like this element is not yet inited!');
+                //console.log('Looks like this element is not yet inited!');
                 return;
             }
             var data = jqe.data('fireworks_data');

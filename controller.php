@@ -404,7 +404,16 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'controls')
     print json_encode($output);
 }
 
-//ADMINISTRATION TASKS
+/**
+ * requires
+ *  action
+ */
+else if (!empty($_POST['action']) && $_POST['action'] == 'list_players')
+{
+    $output['data'] = $player->listPlayers();
+    
+    print json_encode($output);
+}
 
 /**
  * requires
@@ -416,6 +425,10 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'list_users')
     
     print json_encode($output);
 }
+
+//ADMINISTRATION TASKS
+
+
 
 
 /**
@@ -468,5 +481,90 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'sync')
     
     print json_encode($output);
 }
+
+
+
+/**
+ * requires
+ *  action
+ */
+else if (!empty($_POST['action']) && $_POST['action'] == 'invitations')
+{
+    $output['data'] = $game->getOpenInvitations($_SESSION['id']);
+    $output['return'] = boolval($output['data']);
+    print json_encode($output);
+}
+
+/**
+ * requires
+ *  action
+ *  invited_id
+ */
+else if (!empty($_POST['action']) && $_POST['action'] == 'switch')
+{
+    $output['return'] = False;
+    if ($_SESSION['CURRENT_GAME'] != -1)
+    {
+        $output['return'] = $game->inviteToSwitch($_SESSION['id'], $_POST['invited_id'], $_SESSION['CURRENT_GAME']);
+        if ($output['return'])
+        {
+            $_SESSION['CURRENT_GAME']  = -1;
+            $output['message'] = 'Player invitation sent';
+        }
+        else 
+        {
+            $invited = $game->isInvitedToJoin($_POST['invited_id'], $_SESSION['CURRENT_GAME']);
+            $playing = $game->isPlaying($_POST['invited_id'], $_SESSION['CURRENT_GAME']);
+            if ($invited)
+                $output['message'] = "Player already Invited";
+            if ($playing)
+                $output['message'] = "Player is already playing";
+
+            if (!$invited && !$playing)
+                $output['message'] = "Game must be open to switch players";
+        }  
+    }
+    else 
+    {
+        $output['message'] = 'You need to be playing a game';
+    }
+    print json_encode($output);
+}
+
+
+/**
+ * requires
+ *  action
+ *  game_id
+ *  user_id
+ */
+else if (!empty($_POST['action']) && $_POST['action'] == 'accept')
+{
+   
+    $output['return'] = $game->acceptSwitchInvite($_POST['user_id'], $_SESSION['id'], $_POST['game_id']);
+    if ($output['return'])
+        $_SESSION['CURRENT_GAME'] = $_POST['game_id'];
+   
+    print json_encode($output);
+}
+
+/**
+ * requires
+ *  action
+ *  game_id
+ *  user_id
+ */
+else if (!empty($_POST['action']) && $_POST['action'] == 'decline')
+{
+  
+    $output['return'] = $game->declineSwitchInvite($_POST['user_id'], $_SESSION['id'], $_POST['game_id']);
+    if ($output['return'])
+        $_SESSION['CURRENT_GAME']  = -1;
+   
+    print json_encode($output);
+}
+
+
+
 
 ?>

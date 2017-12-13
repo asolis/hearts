@@ -41,7 +41,7 @@ if ($_SESSION['admin'])
         <link rel="stylesheet" href="css/background.css">
         <link rel="stylesheet" href="vendor/bootstrap-4/css/bootstrap.min.css">
         <link rel="stylesheet" href="vendor/font-awesome-4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="css/card.css?v2">
+        <link rel="stylesheet" href="css/card.css">
         <style>
                 
                
@@ -73,7 +73,10 @@ if ($_SESSION['admin'])
                                     </li>
                                     <li class="nav-item">
                                             <a id="rankings" class="nav-link" href="#">Rankings</a>
-                                    </li> 
+                                    </li>
+                                    <li class="nav-item">
+                                            <a id="switch" class="nav-link" href="#">Switch With Player</a>
+                                    </li>
                                     <li class="nav-item">
                                             <a id="update_profile" class="nav-link" href="#">Update Profile</a>
                                     </li> 
@@ -100,9 +103,9 @@ if ($_SESSION['admin'])
                 <script src="vendor/json2html-sprintf/json2html.js"></script>
                 <script src="vendor/json2html-sprintf/jquery.json2html.js"></script>
                 <script src="vendor/jQuery-MD5/jquery.md5.js"></script>
-                <script src="vendor/confetti/jquery.confetti.js?asdaasdfsdfasdffasdasdf"></script>
+                <script src="vendor/confetti/jquery.confetti.js"></script>
                 <script src="vendor/fireworks/jquery.fireworks.js"></script>
-                <script src="js/display.js?asdfasdasdfasdasasdfasddff"></script>	
+                <script src="js/display.js"></script>	
                 <script>
                     $(function() {
                         $('#update_profile').click(function(){
@@ -118,6 +121,11 @@ if ($_SESSION['admin'])
                         $('#logout').click(function(){
                             logout();
                         });
+                        $('#switch').click(function(){
+                            showSwitchPlayer('#container');
+                            $('#controls').html('');
+                            $('#navbarToggleExternalContent').collapse('hide');
+                        });
 
 
                         var CURRENT_GAME = <?php print $_SESSION['CURRENT_GAME']; ?>;
@@ -125,7 +133,7 @@ if ($_SESSION['admin'])
 
                         if (CURRENT_GAME == -1)
                         {
-                            showHome(container);
+                            showHome('#container');
                         } 
                         else
                         {

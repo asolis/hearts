@@ -68,7 +68,7 @@ if (!empty($_SESSION["authenticated"]))
 													<form >
 															<!-- Username -->
 															<div class="form-group">
-																	<input type="text" 		name="username"   placeholder="Username"  	required="required" class="form-control"/>
+																	<input type="text" 	autocapitalize="none"	name="username"   placeholder="Username"  	required="required" class="form-control"/>
 																	<div class="invalid-feedback"></div>
 															</div>
 															<!-- Password -->
