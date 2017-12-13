@@ -137,7 +137,7 @@ if (empty($_SESSION["authenticated"]) or !$_SESSION['admin'])
                                     inputs[i].value = $.md5(inputs[i].value);
                             
                             $.post(controller, inputs, function(json){
-                                
+                                alert(json.message);
                             },'json');
 
                         });
@@ -147,7 +147,7 @@ if (empty($_SESSION["authenticated"]) or !$_SESSION['admin'])
                             var inputs = $('#unlock_game').serializeArray();
                             
                             $.post(controller, inputs, function(json){
-                                
+                                alert(json.message);
                             },'json');
                             
                         });
@@ -157,8 +157,7 @@ if (empty($_SESSION["authenticated"]) or !$_SESSION['admin'])
                                 "action": "sync"
                             };
                             $.post(controller, options, function(json){
-                                if (json.return)
-                                    alert(json.message);
+                                alert(json.message);
                             },'json');
                         });
                            

@@ -426,7 +426,12 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'list_users')
  */
 else if (!empty($_POST['action']) && $_POST['action'] == 'reset_password')
 {
-    $output['return'] = boolval($player->resetPassword($_SESSION['id'], $_POST['user_id'], $_POST['password']));
+    $success = boolval($player->resetPassword($_SESSION['id'], $_POST['user_id'], $_POST['password']));
+    $output['return'] = $success;
+    if ($success)
+        $output['message'] = 'New password SET';
+    else
+        $output['message'] = 'Password NOT SET';
 
     print json_encode($output);
 }
@@ -438,8 +443,12 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'reset_password')
  */
 else if (!empty($_POST['action']) && $_POST['action'] == 'unlock_game')
 {
-    $output['return'] = boolval($game->unlockGame($_SESSION['id'], $_POST['game_id']));
-    
+    $success          = boolval($game->unlockGame($_SESSION['id'], $_POST['game_id']));
+    $output['return'] = $success;
+    if ($success)
+        $output['message'] = sprintf('Game %s unlocked', $_POST['game_id']);
+    else
+        $output['message'] = sprintf('Game %s NOT unlocked', $_POST['game_id']);
     print json_encode($output);
 }
 
