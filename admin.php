@@ -158,7 +158,7 @@ if (empty($_SESSION["authenticated"]) or !$_SESSION['admin'])
                             };
                             $.post(controller, options, function(json){
                                 if (json.return)
-                                    location.reload();
+                                    alert(json.message);
                             },'json');
                         });
                            
