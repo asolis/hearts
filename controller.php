@@ -96,6 +96,28 @@ else if ( !empty($_GET['action']) && $_GET['action'] == 'stats')
     print json_encode($output);
 }
 /**
+ * Show games stats_ext:
+ * requires 
+ *      action
+ * optional
+ *      column
+ */
+else if ( !empty($_GET['action']) && $_GET['action'] == 'stats_ext') 
+{
+    if (!empty($_GET['column']))
+    {
+        $data = $game->getStatsExt($_GET['column'], SORT_ASC);
+    }
+    else 
+    {
+        $data = $game->getStatsExt();
+    }
+    $output['data'] = $data;
+
+    print json_encode($output);
+}
+
+/**
  * Show game by id
  * requires
  *      action 
@@ -564,7 +586,17 @@ else if (!empty($_POST['action']) && $_POST['action'] == 'decline')
     print json_encode($output);
 }
 
+/**
+ * requires
+ *  action
+ */
+else if (!empty($_GET['action']) && $_GET['action'] == 'history_elo')
+{
+    
+    $output['data'] = $game->getElo();
 
+    print json_encode($output);
+}
 
 
 ?>

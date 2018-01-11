@@ -122,16 +122,54 @@ function showProfile(container)
       
 }
 
+function showElo(container)
+{
+    var options    = {
+        "action": "history_elo"
+    };
+    $.getJSON(controller, options, function(data){
+        console.log(data);
+        var transforms = {
+            "card"  :{"<>":"div","class":"container mt-5","html":[
+                {"<>":"div","class":"card tex ","html":[
+                    {"<>":"div","class":"card-header ","html":[
+                        {"<>":"h5","html":"Compound Elo "}
+                    ]},
+                    {"<>":"div","class":"card-body text-center card-body-no-padding","html":[
+                        {"<>":"table","class":"table table-sm table-bordered table-dark ","html":[
+                            {"<>":"thead","html":[
+                                {"<>":"tr","html":[
+                                    {"<>":"th","html":"Rank"},
+                                    {"<>":"th","html":"Player"},
+                                    {"<>":"th","html":"Elo"}
+                                  ]}
+                              ]},
+                            {"<>":"tbody","html": function(obj){
+                                return $.json2html(obj.data, transforms.rows);
+                            }}
+                          ]}
+                      ]}
+                  ]}
+              ]},
+            "rows": {"<>":"tr","html":[
+                {"<>":"th","html":"${rank}"},
+                {"<>":"td","html":"${first_name} ${last_name}"},
+                {"<>":"td","html":"${elo}"}
+              ]}
+        };
 
+        $(container).html('');
+        $(container).json2html(data, transforms.card);
+    });
+}
 function showRankings(container, stats_column)
 {
     var options    = {
         "action": "stats",
         "column": stats_column
     };
-    
     $.getJSON(controller, options, function(data){
-        
+        console.log(data);
         var transforms = {
             "card"  :{"<>":"div","class":"container mt-5","html":[
                 {"<>":"div","class":"card tex ","html":[
@@ -184,6 +222,78 @@ function showRankings(container, stats_column)
     });
 }
 
+function showRankingsExt(container, stats_column)
+{
+    var options    = {
+        "action": "stats_ext",
+        "column": stats_column
+    };
+    
+    
+    $.getJSON(controller, options, function(data){
+        
+        var transforms = {
+            "card"  :{"<>":"div","class":"container mt-5","html":[
+                {"<>":"div","class":"card tex ","html":[
+                    {"<>":"div","class":"card-header ","html":[
+                        {"<>":"h5","html":sprintf("Rankings Ext <small>| $s</small> ", options.column)}
+                    ]},
+                    {"<>":"div","class":"card-body text-center card-body-no-padding","html":[
+                        {"<>":"table","class":"table table-sm table-bordered table-dark ","html":[
+                            {"<>":"thead","html":[
+                                {"<>":"tr","html":[
+                                    {"<>":"th","html":"Rank"},
+                                    {"<>":"th","html":"Player"},
+                                    {"<>":"th", "onclick":function(e){ 
+                                        showRankingsExt(container, 'avg_hand');
+                                    }, "children":[{"<>":"a", "href":"#","html":"H"}]},
+                                    {"<>":"th", "onclick":function(e){ 
+                                        showRankingsExt(container, 'avg_game');
+                                    }, "children":[{"<>":"a", "href":"#","html":"G"}]},
+                                    {"<>":"th", "onclick":function(e){ 
+                                        showRankingsExt(container, 'total_pts');
+                                    }, "children":[{"<>":"a", "href":"#","html":"T"}]},
+                                    {"<>":"th", "onclick":function(e){
+                                        showRankingsExt(container, 'games');
+                                    }, "children":[{"<>":"a", "href":"#","html":"G"}]}
+                                  ]}
+                              ]},
+                            {"<>":"tbody","html": function(obj){
+                                return $.json2html(obj.data, transforms.rows);
+                            }}
+                          ]}
+                      ]}
+                  ]}
+              ]},
+            "rows": {"<>":"tr","html":[
+                {"<>":"th","html":"${rank}"},
+                {"<>":"td","html":"${first_name} ${last_name}"},
+                {"<>":"td","html":"${avg_hand}.2f"},
+                {"<>":"td","html":"${avg_game}.2f"},
+                {"<>":"td","html":"${total_pts}"},
+                {"<>":"td","html":"${games}"}
+              ]}
+        };
+        
+        $(container).html('');
+        $(container).json2html(data, transforms.card);
+    });
+}
+function showAllRankings(container)
+{
+    var transform =[
+        {'<>':'div','id':'rankings_0'},
+        {'<>':'div','id':'rankings_1'},
+        {'<>':'div','id':'rankings_2'},
+    ];
+    $(container).html('');
+    $(container).json2html([0], transform);
+    
+    showElo('#rankings_0');
+    showRankings('#rankings_1',"wins");
+    
+    showRankingsExt('#rankings_2','avg_hand');
+}
 
 function showGame(container, game_id, playing)
 {

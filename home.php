@@ -105,7 +105,7 @@ if ($_SESSION['admin'])
                 <script src="vendor/jQuery-MD5/jquery.md5.js"></script>
                 <script src="vendor/confetti/jquery.confetti.js"></script>
                 <script src="vendor/fireworks/jquery.fireworks.js"></script>
-                <script src="js/display.js"></script>	
+                <script src="js/display.js?v4"></script>	
                 <script>
                     $(function() {
                         $('#update_profile').click(function(){
@@ -114,10 +114,11 @@ if ($_SESSION['admin'])
                             $('#navbarToggleExternalContent').collapse('hide');
                         });
                         $('#rankings').click(function(){
-                            showRankings('#container', "wins");
+                            showAllRankings('#container');
                             $('#controls').html('');
                             $('#navbarToggleExternalContent').collapse('hide');
                         })
+                        
                         $('#logout').click(function(){
                             logout();
                         });

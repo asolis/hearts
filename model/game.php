@@ -90,6 +90,128 @@ class Game
             return  $this->db->delete('invites', $where );
         }
 
+        /**
+         * helper function to compute elo among players in one game
+         * $game = array(
+         *  array('player_id' => id, 'score'=> score, 'elo'=>elo, 'played'=>games_played),
+         *  array('player_id' => id, 'score'=> score, 'elo'=>elo, 'played'=>games_played),
+         *  array('player_id' => id, 'score'=> score, 'elo'=>elo, 'played'=>games_played),
+         *  array('player_id' => id, 'score'=> score, 'elo'=>elo, 'played'=>games_played)
+         * )
+         */
+        function _elo_4_($game, $exp = 400)
+        {
+            foreach(range(0,3) as $player1)
+            {
+                $elo1   = $game[$player1]['elo'];
+                $score1 = $game[$player1]['score'];
+                $played = $game[$player1]['played'];
+
+                $R1     = 10 ** ($elo1/$exp);
+                
+                $AdjustK    = ($played < 5)? 2.0 : ( ($played < 10)? 4.0: 8.0 );
+                
+                $compound1  = 0.0;
+                foreach(range(0,3) as $player2)
+                {
+                    if ($player1 == $player2)
+                        continue;
+                    
+                    $elo2   = $game[$player2]['elo'];
+                    $score2 = $game[$player2]['score'];
+
+                    $R2   = 10 ** ($elo2/$exp);
+                    $E1   = $R1 / ($R1 + $R2);
+
+                    $S1   = ($score1 < $score2)? 1.0 : ( ($score1 == $score2)? 0.5 : 0.0);
+                    
+                    $compound1 += $AdjustK * ($S1 - $E1);
+                }
+                $game[$player1]['comp_elo'] = intval( $elo1 + round($compound1));
+            }
+                
+            return $game;
+        }
+        
+        function _history_elo_()
+        {
+            $history = $this->db->select('stats_game_hand',
+                                        array('player_id',
+                                                'game_id',
+                                                'sum(score) as score'),
+                                        array(),
+                                        'AND',
+                                        'group by game_id, player_id order by time_end');
+            if ($history)
+            {
+                $total_games = count($history);
+                if ($total_games % 4 != 0)
+                    die('Wrong game table');
+                
+                $players = $this->db->select('player',
+                                             array('id',
+                                                   'elo',
+                                                   'first_name',
+                                                   'last_name',
+                                                   'username'),
+                                            array('admin'=>0));
+                
+                $elo = array();
+                array_walk($players, function(&$row, $idx) use (&$elo){ 
+                    $elo[$row['id']]= array(
+                                    'elo'   => $row['elo'], 
+                                    'played'=> 0,
+                                    'id'    => $row['id'],
+                                    'first_name' => $row['first_name'],
+                                    'last_name'  => $row['last_name'],
+                                    'username'   => $row['username']);
+                });
+                
+                foreach (range(0,$total_games-1,4) as $idx)
+                {
+                    $elo[$history[$idx]['player_id']]['played']     += 1;
+                    $elo[$history[$idx + 1]['player_id']]['played'] += 1;
+                    $elo[$history[$idx + 2]['player_id']]['played'] += 1;
+                    $elo[$history[$idx + 3]['player_id']]['played'] += 1;
+
+                    $history[$idx]['elo']     = $elo[$history[$idx]['player_id']]['elo'];
+                    $history[$idx + 1]['elo'] = $elo[$history[$idx + 1]['player_id']]['elo'];
+                    $history[$idx + 2]['elo'] = $elo[$history[$idx + 2]['player_id']]['elo'];
+                    $history[$idx + 3]['elo'] = $elo[$history[$idx + 3]['player_id']]['elo'];
+
+                    $history[$idx]['played']     = $elo[$history[$idx]['player_id']]['played'];
+                    $history[$idx + 1]['played'] = $elo[$history[$idx + 1]['player_id']]['played'];
+                    $history[$idx + 2]['played'] = $elo[$history[$idx + 2]['player_id']]['played'];
+                    $history[$idx + 3]['played'] = $elo[$history[$idx + 3]['player_id']]['played'];
+
+                    $game = array($history[$idx], 
+                                  $history[$idx + 1], 
+                                  $history[$idx + 2], 
+                                  $history[$idx + 3]);
+                    $game = $this->_elo_4_($game);
+
+                    $elo[$history[$idx]['player_id']]['elo']    = $game[0]['comp_elo'];
+                    $elo[$history[$idx + 1]['player_id']]['elo']= $game[1]['comp_elo'];
+                    $elo[$history[$idx + 2]['player_id']]['elo']= $game[2]['comp_elo'];
+                    $elo[$history[$idx + 3]['player_id']]['elo']= $game[3]['comp_elo'];
+                }
+                
+                
+                $shots = $this->db->select('shots', array('player_id','count(player_id) as shots'),array(),'AND',' group by player_id');
+                array_walk($shots, function($shot, $idx) use (&$elo){
+                    $elo[$shot['player_id']]['elo'] += intval($shot['shots']);
+                });
+                
+                $cheats = $this->db->select('cheats', array('player_id','count(player_id) as cheats'),array(),'AND',' group by player_id');
+                array_walk($cheats, function($cheat, $idx) use (&$elo){
+                    $elo[$cheat['player_id']]['elo'] -= intval($cheat['cheats']);
+                });
+
+                return $elo;
+            }
+            
+            return array();
+        }
 
         //--------- Boolean status functions ---------------
         /**
@@ -127,9 +249,45 @@ class Game
         /**
          * show  stats
          */
+        function getElo($column = 'elo', $type=SORT_DESC)
+        {
+            $table  = $this->_history_elo_();
+            
+            $c = array_map(function($row) use ($column){return $row[$column];}, $table);
+            array_multisort($c, $type, $table);
+
+            $this->_rank($table, $column);
+            
+            return $table;
+        }
+        /**
+         * show  stats
+         */
         function getStats($column = 'wins', $type=SORT_DESC)
         {
             $table  = $this->db->select('stats', array('*'));
+            
+            $c = array_map(function($row) use ($column){return $row[$column];}, $table);
+            array_multisort($c, $type, $table);
+
+            $this->_rank($table, $column);
+            return $table;
+        }
+        /**
+         * show  stats ext
+         */
+        function getStatsExt($column = 'avg_hand', $type=SORT_ASC)
+        {
+
+
+            $table  = $this->db->select('stats_game_hand', array('player_id',
+                                                                 'avg(score) as avg_hand',
+                                                                 'cast (sum(score) as float)/count (distinct game_id) as avg_game',
+                                                                 'sum(score) as total_pts',
+                                                                 'count (distinct game_id) as games',
+                                                                 'first_name',
+                                                                 'last_name',
+                                                                 'username'), array(),'AND','group by player_id');
             
             $c = array_map(function($row) use ($column){return $row[$column];}, $table);
             array_multisort($c, $type, $table);

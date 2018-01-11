@@ -41,9 +41,10 @@ class DBConnection {
     function _bind_params($query, $column_value_dict, &$stmt)
     {
         $stmt = $this->conn->prepare($query);
-       
+        
         foreach ($column_value_dict as $column => &$val)
         {
+           
             $stmt->bindParam(sprintf(':%s', $column), $val);
         }
         
