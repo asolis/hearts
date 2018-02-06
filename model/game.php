@@ -109,7 +109,7 @@ class Game
 
                 $R1     = 10 ** ($elo1/$exp);
                 
-                $AdjustK    = ($played < 5)? 2.0 : ( ($played < 10)? 4.0: 8.0 );
+                $AdjustK    = ($played < 5)? 2.0 : 8.0;
                 
                 $compound1  = 0.0;
                 foreach(range(0,3) as $player2)
@@ -197,15 +197,15 @@ class Game
                 }
                 
                 
-                $shots = $this->db->select('shots', array('player_id','count(player_id) as shots'),array(),'AND',' group by player_id');
-                array_walk($shots, function($shot, $idx) use (&$elo){
-                    $elo[$shot['player_id']]['elo'] += intval($shot['shots']);
-                });
+                // $shots = $this->db->select('shots', array('player_id','count(player_id) as shots'),array(),'AND',' group by player_id');
+                // array_walk($shots, function($shot, $idx) use (&$elo){
+                //     $elo[$shot['player_id']]['elo'] += intval($shot['shots']);
+                // });
                 
-                $cheats = $this->db->select('cheats', array('player_id','count(player_id) as cheats'),array(),'AND',' group by player_id');
-                array_walk($cheats, function($cheat, $idx) use (&$elo){
-                    $elo[$cheat['player_id']]['elo'] -= intval($cheat['cheats']);
-                });
+                // $cheats = $this->db->select('cheats', array('player_id','count(player_id) as cheats'),array(),'AND',' group by player_id');
+                // array_walk($cheats, function($cheat, $idx) use (&$elo){
+                //     $elo[$cheat['player_id']]['elo'] -= intval($cheat['cheats']);
+                // });
 
                 return $elo;
             }
